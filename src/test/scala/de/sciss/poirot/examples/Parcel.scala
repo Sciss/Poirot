@@ -41,7 +41,7 @@ object Parcel extends App with Problem {
 
   // Impose cuircuit constraint which makes sure
   // that array cities is a hamiltonian circuit
-  circuit(cities: _*)
+  circuit(cities)
 
   // We start our journey at first city
   var startTown = cities(0)

@@ -326,7 +326,7 @@ package object poirot {
     *
     * @param nodes variables, which domains define next nodes in the graph.
     */
-  def circuit(nodes: IntVar*)(implicit model: Model): Unit = {
+  def circuit(nodes: IIterable[IntVar])(implicit model: Model): Unit = {
     val c = new Circuit(nodes.toArray[jc.IntVar])
     if (trace) println(c)
     model.impose(c)
