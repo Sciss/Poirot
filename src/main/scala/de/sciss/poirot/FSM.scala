@@ -1,0 +1,79 @@
+package de.sciss.poirot
+
+import org.jacop.util.{fsm => jfsm}
+import scala.collection.mutable
+
+/** FSM specification for regular constraint. */
+class FSM extends jfsm.FSM {
+  import FSM.State
+
+  val states: mutable.Buffer[State] = mutable.ArrayBuffer.empty
+
+  /** FSM specification for regular constraint.
+    *
+    * @constructor Creates a new FSM.
+    * @param n number of states in this FSM.
+    */
+  def this(n: Int) = {
+    this()
+    for (i <- 0 until n) add(new State)
+  }
+
+  /** Defines initial state for this FSM.
+    *
+    * @param s state.
+    */
+  def init(s: State): Unit = {
+    initState = s
+    add(s)
+  }
+
+  /** Defines a list of final state for this FSM.
+    *
+    * @param st array of states.
+    */
+  def addFinalStates(st: Array[State]): Unit = st.foreach(add)
+
+  def add(s: State): this.type = {
+    states     += s
+    allStates add s
+    this
+  }
+
+  /** Number of states in this FSM. */
+  def length = states.length
+
+  /** Gets the state n of this FSM.
+    *
+    * @param n index of state.
+    * @return n-th state
+    */
+  def apply(n: Int): State = states(n)
+}
+
+object FSM {
+  /** state specification for FSM for regular constraint.
+    *
+    * @constructor Creates a new state for FSM.
+    */
+  class State extends jfsm.FSMState {
+
+    /** Transition of FSM.
+      *
+      * @param tran values for executing this transition.
+      * @param that next state for this transition.
+      */
+    def -> (tran: IntSet, that: State): Unit = {
+      transitions.add(new jfsm.FSMTransition(tran, that))
+    }
+
+    /** Transition of FSM.
+      *
+      * @param tran integer value for executing this transition.
+      * @param that next state for this transition.
+      */
+    def -> (tran: Int, that: State): Unit = {
+      transitions.add(new jfsm.FSMTransition(new IntSet(tran, tran), that))
+    }
+  }
+}
