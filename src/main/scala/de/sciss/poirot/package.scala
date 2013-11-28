@@ -837,7 +837,7 @@ package object poirot {
                                  (implicit m: ClassTag[A]): SelectChoicePoint[A] =
     new SplitSelect[A](vars.toArray, heuristic, new IndomainMiddle[A]())
 
-  def withStatistics[Z](block: => Z): (Stats, Z) = {
+  def withStatistics[Z](block: => Z): (Z, Stats) = {
     val old = addLabelFun.get()
     val b   = mutable.Buffer.empty[DepthFirstSearch[_ <: jc.Var]]
     addLabelFun.set(b)
@@ -862,7 +862,7 @@ package object poirot {
       val stats = Stats(nodes = nodes, decisions = decisions, wrong = wrong, backtracks = backtracks, depth = depth,
         solutions = solutions)
 
-      (stats, res)
+      (res, stats)
 
     } finally {
       addLabelFun.set(old)

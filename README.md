@@ -36,6 +36,19 @@ To compile, use `sbt compile`, for the API docs `sbt doc`, to jump into a REPL `
 - Removing global state when possible
 
 ## getting started
-                            ^
+
 You need evidence of a `Model` instance for most operations. Constraints are automatically posted to that model.
-Examples are provided in the test directory, you can selectively run them via `sbt test:run`.
+Examples are provided in the test directory, you can selectively run them via `sbt test:run`. If you write small
+self containing problems, you may mix in the `Problem` trait which provides exactly one model (store).
+
+For example, have a look at the standard n-Queens problem, `Queen.scala`.
+
+## limitations
+
+I am currently figuring out how to best handle the syntax. No all methods from the original Scala DSL are implemented.
+You will also see that not all original examples are implemented or converted yet. An open questions is the handling
+of e.g. `min` versus `assignMin`, that is cases which would appear as a normal operator but in certain scenarios require
+the provision of an a-priori defined result variable.
+
+I have only worked with int and boolean variables, so pretty much everything regarding `SetVar`, `IntSet`, `FSM`,
+`Network` is not tested or cleaned up.

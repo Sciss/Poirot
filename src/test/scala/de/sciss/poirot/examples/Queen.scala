@@ -1,28 +1,39 @@
 package de.sciss.poirot
 package examples
 
+/** The n-Queens problem is to place n chess queens on an N x N chessboard
+  * so that no two queens attack each other.
+  */
 object Queen extends App with Problem {
-
+  // number of queens, also number of rows and columns of the board
   val n = 50
 
-  val q: List[IntVar] = for (i <- List.range(0, n)) yield IntVar("q"+i, 0, n)
+  // the row of each queen is given by its index,
+  // the variable to determine is the queen's column index
+  val q = for (i <- 0 until n) yield IntVar("q"+i, 0, n-1)
 
-  def noattack(i: Int, j: Int, qi: IntVar, qj: IntVar) = {
-	qi     #!= qj
-	qi + i #!= qj + j
-	qi - i #!= qj - j
+  // apply constraints
+  def noAttack(i: Int, j: Int, qi: IntVar, qj: IntVar): Unit = {
+    qi     #!= qj       // two queens cannot occupy the same position
+    qi + i #!= qj + j   // they are not in a NW-SE diagonal...
+    qi - i #!= qj - j   // ...or a
   }
 
-  for (i <- 0 until n; j <- i+1 until n) noattack(i, j, q(i), q(j))
+  for {
+    i <- 0   until n
+    j <- i+1 until n
+  } noAttack(i, j, q(i), q(j))
 
-  val result = satisfy(search(q, firstFail, indomainMiddle))
+  val success = satisfy(search(q, firstFail, indomainMiddle))
 
-  if (result) 
-    q.foreach(qi => {
-      for( i <- 0 until n) 
- 	if (qi.value() == i) print(" # ") else print(" . ")
-      println()
+  val result = if (success) {
+    q.map { qi =>
+      val pos = qi.value()
+      ("." * n).updated(pos, '#').mkString(" ")
+    } .mkString("\n")
+  } else {
+    "No solution!"
+  }
 
-    })
-  else println("No solution")
+  println(result)
 }

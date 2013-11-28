@@ -59,14 +59,14 @@ object Filter extends App with Problem {
   val tr = Vec.tabulate(t.length)(i => Vec(t(i), r(i)))
 
   // numberSolutions(2)
-  val (result, stat) = withStatistics {
+  val (result, stats) = withStatistics {
     minimize(searchVector(tr, smallestMin, indomainMin), end, printSol)
   }
   // numberSolutions(2)
   // val result = minimize_seq( List(search(t, smallest_min, indomain_min), search(r, input_order, indomain_min)), 
   // end, printSol )
 
-  println(stat)
+  println(stats)
 
   def printSol(): Unit = {
     println("\nSolution with cost: " + end.value + "\n=======================")

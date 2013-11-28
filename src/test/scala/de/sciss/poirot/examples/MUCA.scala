@@ -166,7 +166,7 @@ object MUCA extends Problem {
     var usedTransformation = Array.tabulate(noAvailableTransformations)(i => IntVar("isUsed_" + (i + 1), 0, 1))
 
     for (i <- 0 until noAvailableTransformations)
-      among(transitions, new IntSet(i + 1, i + 1), usedTransformation(i))
+      among(transitions, IntSet(i + 1, i + 1), usedTransformation(i))
 
     var noTransformations = 0
     var no = 0
@@ -181,9 +181,9 @@ object MUCA extends Problem {
       // tuples[0] denotes [0, 0, ....] so bid is not used.
       tuples(0) = new Array[Int](bid.length + 1)
 
-      var i = 0;
+      var i = 0
       for (bid_xor <- bid) {
-        var kSet = new IntSet()
+        var kSet = IntSet()
 
         var xorUsedTransformation = mutable.Buffer.empty[IntVar]
         for (t <- bid_xor) {
@@ -211,7 +211,7 @@ object MUCA extends Problem {
 
       }
 
-      val bidCost = IntVar("bidCost" + (bidCosts.length + 1), minCost, maxCost);
+      val bidCost = IntVar("bidCost" + (bidCosts.length + 1), minCost, maxCost)
       nVars(0) = bidCost
 
       table(nVars.toList, tuples)
@@ -243,11 +243,11 @@ object MUCA extends Problem {
 
       for (i <- 0 until maxNoTransformations) {
 
-        var vars = List[IntVar]()
+        var vars = Vec[IntVar]()
         vars :+= transitions(i)
-        deltasI(i)(g) = new IntVar("deltaI_g" + g + "t" + i, minDelta, maxDelta);
+        deltasI(i)(g) = new IntVar("deltaI_g" + g + "t" + i, minDelta, maxDelta)
         vars :+= deltasI(i)(g)
-        deltasO(i)(g) = new IntVar("deltaO_g" + g + "t" + i, minDelta, maxDelta);
+        deltasO(i)(g) = new IntVar("deltaO_g" + g + "t" + i, minDelta, maxDelta)
         vars :+= deltasO(i)(g)
 
         table(vars.toList, tuples)
@@ -312,7 +312,7 @@ object MUCA extends Problem {
     print("\t")
 
     for (i <- 0 until maxNoTransformations if transitions(i).value() != 0 ) print(transitions(i) + "\t")
-    println();
+    println()
 
     for (g <- 0 until noGoods) {
       print(initialQuantity(g) + "\t")
@@ -387,7 +387,7 @@ object MUCA extends Problem {
       var line = br.readLine()
       var tk = new StringTokenizer(line, "(),: ")
 
-      while (tk.hasMoreTokens()) {
+      while (tk.hasMoreTokens) {
         noGoods += 1
         tk.nextToken()
         initialQuantity :+= tk.nextToken.toInt
@@ -434,13 +434,13 @@ object MUCA extends Problem {
         }
         // 				System.out.println(bidCounter + " " + bid_xorCounter);
         if (tk.nextToken().toInt > bid_xorCounter) {
-          bid_xorCounter += 1
-          transformationCounter = 1;
+          bid_xorCounter       += 1
+          transformationCounter = 1
 
           bids(bidCounter - 1) :+= mutable.Buffer.empty[Transformation]
         }
         // this token contains the number of the transformation
-        tk.nextToken();
+        tk.nextToken()
         bids(bidCounter - 1)(bid_xorCounter - 1) :+= new Transformation()
 
         bids(bidCounter - 1)(bid_xorCounter - 1)(transformationCounter - 1).goodsIds  = mutable.Buffer.empty[Int]
@@ -481,7 +481,7 @@ object MUCA extends Problem {
         }
         // 				System.out.print("\n");
 
-        line = br.readLine();
+        line = br.readLine()
       }
 
       // now read in the price for each xor bid
@@ -502,11 +502,11 @@ object MUCA extends Problem {
         }
 
         // this token contains the xor_bid id.
-        tk.nextToken();
+        tk.nextToken()
 
         costs(bidCounter - 1) :+= tk.nextToken().toInt
 
-        line = br.readLine();
+        line = br.readLine()
 
       }
 

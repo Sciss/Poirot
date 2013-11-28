@@ -2,39 +2,39 @@ package de.sciss.poirot
 
 import org.jacop.{core => jc}
 
-/** Defines an ordered set of integers and basic operations on these sets.
-  *
-  * @constructor Create a new ordered empty set of integers.
-  */
-class IntSet extends jc.IntervalDomain {
+object IntSet {
+  /** Creates a new ordered empty set of integers. */
+  def apply(): IntSet = new IntSet
 
-  /** Defines an ordered set of integers and basic operations on these sets.
+  /** Creates a new ordered set of integers.
     *
-    * @constructor Create a new ordered set of integers.
     * @param min minimal value of a set interval.
     * @param max maximal value of a set interval.
     */
-  def this(min: Int, max: Int) = {
-    this()
-    addDom(new jc.IntervalDomain(min, max))
+  def apply(min: Int, max: Int): IntSet = {
+    val res = apply()
+    res.addDom(new jc.IntervalDomain(min, max))
+    res
   }
 
-  /** Defines an ordered set of integers and basic operations on these sets.
+  /** Creates a new ordered set containing one element.
     *
-    * @constructor Create a new ordered set containing one element.
     * @param el element of set.
     */
-  def this(el: Int) = {
-    this()
-    addDom(new jc.IntervalDomain(el, el))
+  def apply(el: Int): IntSet = {
+    val res = apply()
+    res.addDom(new jc.IntervalDomain(el, el))
+    res
   }
-
+}
+/** Defines an ordered set of integers and basic operations on these sets. */
+class IntSet private() extends jc.IntervalDomain {
   /** Set union operation on a set and a set with one value.
     *
     * @param n element of set.
     */
-  def + (n: Int): IntSet =  {
-    val tmp = new IntSet
+  def + (n: Int): IntSet = {
+    val tmp = IntSet()
     tmp.unionAdapt(this)
     tmp.unionAdapt(n)
     tmp
@@ -45,7 +45,7 @@ class IntSet extends jc.IntervalDomain {
     * @param that set variable.
     */
   def + (that: IntSet): IntSet = {
-    val tmp = new IntSet
+    val tmp = IntSet()
     tmp.unionAdapt(this)
     tmp.unionAdapt(that)
     tmp
@@ -56,7 +56,7 @@ class IntSet extends jc.IntervalDomain {
     * @param n element of set.
     */
   def * (n: Int): IntSet = {
-    val tmp = new IntSet
+    val tmp = IntSet()
     tmp.unionAdapt(this)
     tmp.intersectAdapt(n,n)
     tmp
@@ -67,7 +67,7 @@ class IntSet extends jc.IntervalDomain {
     * @param that set variable.
     */
   def * (that: IntSet): IntSet = {
-    val tmp = new IntSet
+    val tmp = IntSet()
     tmp.unionAdapt(this)
     tmp.intersectAdapt(that)
     tmp
@@ -78,7 +78,7 @@ class IntSet extends jc.IntervalDomain {
     * @param n element of set.
     */
   def \ (n: Int): IntSet = {
-    val tmp = new IntSet
+    val tmp = IntSet()
     tmp.unionAdapt(this)
     tmp.subtractAdapt(n)
     tmp
@@ -89,7 +89,7 @@ class IntSet extends jc.IntervalDomain {
     * @param that element of set.
     */
   def \ (that: IntSet): IntSet = {
-    val tmp = new IntSet
+    val tmp = IntSet()
     tmp.unionAdapt(this)
     for (i <- 0 until that.size) {
       tmp.subtractAdapt(that.intervals(i).min, that.intervals(i).max)
@@ -99,12 +99,11 @@ class IntSet extends jc.IntervalDomain {
 
   /** Set complement operation on a set. */
   def unary_~ : IntSet = {
-    val tmp = new IntSet(jc.IntDomain.MinInt, jc.IntDomain.MaxInt)
+    val tmp = IntSet(jc.IntDomain.MinInt, jc.IntDomain.MaxInt)
     for (i <- 0 until this.size)
       tmp.subtractAdapt(intervals(i).min, intervals(i).max)
     tmp
   }
 
-  /** Produces string representation of a set. */
   override def toString: String = if (singleton) value.toString else super.toString
 }
