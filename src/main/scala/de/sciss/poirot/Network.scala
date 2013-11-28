@@ -6,7 +6,7 @@ import org.jacop.constraints.{netflow => jnet}
   *
   * @constructor Creates an empty network
   */
-class Network extends jnet.NetworkBuilder {
+class Network private extends jnet.NetworkBuilder {
   import Network.Node
 
   import scala.collection.mutable
@@ -32,20 +32,20 @@ class Network extends jnet.NetworkBuilder {
 
   /** Creates an arc between two nodes.
     *
-    * @param source start node of the arc
-    * @param destination end node the arc
-    * @param weight weight of this arc for cost calculation
-    * @param capacity capacity for the flow on this arc
+    * @param source       start node of the arc
+    * @param destination  end node the arc
+    * @param weight       weight of this arc for cost calculation
+    * @param capacity     capacity for the flow on this arc
     */
-  def arc(source: Node, destination: Node, weight: IntVar, capacity: IntVar): Unit = {
-    // println(source.name + " -> " + destination.name)
+  def arc(source: Node, destination: Node, weight: IntVar, capacity: IntVar): Unit =
     addArc(nodes(source), nodes(destination), weight, capacity)
-  }
 
   def cost(c: IntVar): Unit = setCostVariable(c)
 }
 
 object Network {
+  def apply() = new Network
+
   /** Node definition for network for networkflow constraint */
   case class Node(var name: String, var balance: Int)
 }
