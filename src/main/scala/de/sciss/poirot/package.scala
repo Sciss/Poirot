@@ -268,6 +268,18 @@ package object poirot {
     value
   }
 
+  def elementAt_=(index: IntVar, xs: Vec[Int], result: IntVar)(implicit model: Model): Unit = {
+    val c       = new Element(index, xs.toArray, result)
+    if (trace) println(c)
+    model.impose(c)
+  }
+
+  def elementAt2_=(index: IntVar, xs: Vec[IntVar], result: IntVar)(implicit model: Model): Unit = {
+    val c       = new Element(index, xs.toArray[jc.IntVar], result)
+    if (trace) println(c)
+    model.impose(c)
+  }
+
   /** Wrapper for [[org.jacop.constraints.Diff2]].
     *
     * XXX TODO: remove arrays, unify sequences

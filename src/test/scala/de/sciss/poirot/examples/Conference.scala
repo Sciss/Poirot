@@ -37,20 +37,22 @@ object Conference extends App with Problem {
   // E != K
   sessions(iE) #!= sessions(iK)
 
+  def allDifferent(indices: Int*): Unit = indices.toList.map(sessions).allDifferent()
+
   // different times - B, G, H, I
-  List(iB, iG, iH, iI).map(sessions).allDifferent()
+  allDifferent(iB, iG, iH, iI)
 
   // different times - A, B, C, H
-  List(iA, iB, iC, iH).map(sessions).allDifferent()
+  allDifferent(iA, iB, iC, iH)
 
   // different times - A, E, G
-  List(iA, iE, iG).map(sessions).allDifferent()
+  allDifferent(iA, iE, iG)
 
   // different times - B, H, K
-  List(iB, iH, iK).map(sessions).allDifferent()
+  allDifferent(iB, iH, iK)
 
   // different times - D, F, J
-  List(iD, iF, iJ).map(sessions).allDifferent()
+  allDifferent(iD, iF, iJ)
 
   // sessions precedence
 
@@ -75,8 +77,6 @@ object Conference extends App with Problem {
   val resources = Vec.tabulate(11)(i => if (i == iJ) two else one)
 
   cumulative((sessions, durations, resources).zipped.toList, three)
-
-  //   println(Model)
 
   val result = satisfyAll(searchSplit(sessions, mostConstrained))
 }
