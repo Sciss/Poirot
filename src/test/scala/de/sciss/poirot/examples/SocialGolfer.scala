@@ -72,7 +72,7 @@
 //              card(golferGroup(i)(k) * golferGroup(j)(l)) #<= 1
 //
 //    val v: Array[IntVar] = new Array[IntVar](weeks)
-//    val var1 = List.tabulate(weeks, players)((i, j) => new IntVar("var" + i + "-" + j, 1, N))
+//    val var1 = List.tabulate(weeks, players)((i, j) => IntVar("var" + i + "-" + j, 1, N))
 //
 //    for (i <- 0 until weeks) {
 //      matching(golferGroup(i)(0), var1(i))
