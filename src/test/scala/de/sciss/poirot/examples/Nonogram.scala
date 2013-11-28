@@ -9,9 +9,11 @@ import scala.collection.mutable
 import org.jacop.constraints.ExtensionalSupportMDD
 
 /** Solves a nonogram example problem, sometimes also called Paint by Numbers.
- *
- * @author Radoslaw Szymanek; rewriting to Scala Krzysztof Kuchcinski; clean up and adaptation H. H. Rutz
- */
+  *
+  * XXX TODO: code is a mess, needs clean up
+  *
+  * @author Radoslaw Szymanek; rewriting to Scala Krzysztof Kuchcinski; clean up and adaptation H. H. Rutz
+  */
 object Nonogram extends Problem {
   /** The value that represents a black dot. */
   val black = 1

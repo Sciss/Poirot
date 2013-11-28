@@ -260,24 +260,26 @@ package object poirot {
     * @param offset   value of index offset (shift).
     * @return         the variable yielding the element at the given index
     */
-  def elementAt(index: IntVar, xs: ISeq[Int], offset: Int = 0)(implicit model: Model): IntVar = {
-    val value   = IntVar()
-    val c       = new Element(index, xs.toArray, value, offset)
+  def intAt(index: IntVar, xs: ISeq[Int], offset: Int = 0)(implicit model: Model): IntVar = {
+    val result  = IntVar()
+    val c       = new Element(index, xs.toArray, result, offset)
     if (trace) println(c)
     model.impose(c)
-    value
+    result
   }
 
-  def elementAt_=(index: IntVar, xs: Vec[Int], result: IntVar)(implicit model: Model): Unit = {
-    val c       = new Element(index, xs.toArray, result)
-    if (trace) println(c)
-    model.impose(c)
-  }
+  //  def elementAt_=(index: IntVar, xs: Vec[Int], result: IntVar)(implicit model: Model): Unit = {
+  //    val c       = new Element(index, xs.toArray, result)
+  //    if (trace) println(c)
+  //    model.impose(c)
+  //  }
 
-  def elementAt2_=(index: IntVar, xs: Vec[IntVar], result: IntVar)(implicit model: Model): Unit = {
-    val c       = new Element(index, xs.toArray[jc.IntVar], result)
+  def intVarAt(index: IntVar, xs: ISeq[IntVar], offset: Int = 0)(implicit model: Model): IntVar = {
+    val result  = IntVar()
+    val c       = new Element(index, xs.toArray[jc.IntVar], result, offset)
     if (trace) println(c)
     model.impose(c)
+    result
   }
 
   /** Wrapper for [[org.jacop.constraints.Diff2]].

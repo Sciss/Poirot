@@ -138,13 +138,13 @@ object Flowers extends App with Problem {
   for (x <- 0 until 4) {
 
     val xz = IntVar("xz" + x, 1, 4)
-    elementAt2_=(xz, wifeD, husbandD(x))
+    wifeD(xz) #= husbandD(x)
 
     val xc = IntVar("xc" + x, 1, 4)
-    elementAt2_=(xc, occasionD, husbandD(x))
+    occasionD(xc) #= husbandD(x)
 
     val xy = IntVar("xy" + x, 1, 4)
-    elementAt2_=(xy, flowerD, husbandD(x))
+    flowerD(xy) #= husbandD(x)
   }
 
   // Channeling constraints between day number and week.

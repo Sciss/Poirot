@@ -41,7 +41,11 @@ object Implicits {
     // def sum(implicit model: Model): IntVar = poirot.sum(peer)
   }
 
+  implicit class PoirotIntVarSeq(val peer: ISeq[IntVar]) extends AnyVal {
+    def apply(index: IntVar)(implicit model: Model): IntVar = poirot.intVarAt(index, peer)
+  }
+
   implicit class PoirotIntSeq(val peer: ISeq[Int]) extends AnyVal {
-    def apply(index: IntVar)(implicit model: Model): IntVar = poirot.elementAt(index, peer)
+    def apply(index: IntVar)(implicit model: Model): IntVar = poirot.intAt(index, peer)
   }
 }
