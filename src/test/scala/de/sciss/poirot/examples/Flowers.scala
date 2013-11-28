@@ -32,6 +32,8 @@
 package de.sciss.poirot
 package examples
 
+import Implicits._
+
 /** A quite complex logic puzzle about flowers.
   *
   * Each of four women in our office was delighted to receive a floral delivery at her desk this month. Each of the
@@ -149,25 +151,25 @@ object Flowers extends App with Problem {
 
   val el = Vec(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4)
 
-  elementAt(wifeD     (iEmma      ), el) #= wifeT    (iEmma      )
-  elementAt(wifeD     (iKristin   ), el) #= wifeT    (iKristin   )
-  elementAt(wifeD     (iLynn      ), el) #= wifeT    (iLynn      )
-  elementAt(wifeD     (iToni      ), el) #= wifeT    (iToni      )
+  el(wifeD     (iEmma      )) #= wifeT    (iEmma      )
+  el(wifeD     (iKristin   )) #= wifeT    (iKristin   )
+  el(wifeD     (iLynn      )) #= wifeT    (iLynn      )
+  el(wifeD     (iToni      )) #= wifeT    (iToni      )
 
-  elementAt(husbandD  (iDoug      ), el) #= husbandT (iDoug      )
-  elementAt(husbandD  (iJustin    ), el) #= husbandT (iJustin    )
-  elementAt(husbandD  (iShane     ), el) #= husbandT (iShane     )
-  elementAt(husbandD  (iTheo      ), el) #= husbandT (iTheo      )
+  el(husbandD  (iDoug      )) #= husbandT (iDoug      )
+  el(husbandD  (iJustin    )) #= husbandT (iJustin    )
+  el(husbandD  (iShane     )) #= husbandT (iShane     )
+  el(husbandD  (iTheo      )) #= husbandT (iTheo      )
 
-  elementAt(flowerD   (iViolets   ), el) #= flowerT  (iViolets   )
-  elementAt(flowerD   (iRoses     ), el) #= flowerT  (iRoses     )
-  elementAt(flowerD   (iChrys     ), el) #= flowerT  (iChrys     )
-  elementAt(flowerD   (iDaises    ), el) #= flowerT  (iDaises    )
+  el(flowerD   (iViolets   )) #= flowerT  (iViolets   )
+  el(flowerD   (iRoses     )) #= flowerT  (iRoses     )
+  el(flowerD   (iChrys     )) #= flowerT  (iChrys     )
+  el(flowerD   (iDaises    )) #= flowerT  (iDaises    )
 
-  elementAt(occasionD (iWalentynki), el) #= occasionT(iWalentynki)
-  elementAt(occasionD (iAwans     ), el) #= occasionT(iAwans     )
-  elementAt(occasionD (iUrodziny  ), el) #= occasionT(iUrodziny  )
-  elementAt(occasionD (iRocznica  ), el) #= occasionT(iRocznica  )
+  el(occasionD (iWalentynki)) #= occasionT(iWalentynki)
+  el(occasionD (iAwans     )) #= occasionT(iAwans     )
+  el(occasionD (iUrodziny  )) #= occasionT(iUrodziny  )
+  el(occasionD (iRocznica  )) #= occasionT(iRocznica  )
 
   // 2. The woman who received flowers for Valentine's Day had them
   // delivered

@@ -1,7 +1,7 @@
 package de.sciss
 
 import scala.reflect.ClassTag
-import collection.immutable.{Iterable => IIterable}
+import collection.immutable.{Iterable => IIterable, Seq => ISeq}
 import scala.collection.{mutable, breakOut}
 import org.jacop.search._
 import org.jacop.{core => jc}
@@ -260,7 +260,7 @@ package object poirot {
     * @param offset   value of index offset (shift).
     * @return         the variable yielding the element at the given index
     */
-  def elementAt(index: IntVar, xs: Vec[Int], offset: Int = 0)(implicit model: Model): IntVar = {
+  def elementAt(index: IntVar, xs: ISeq[Int], offset: Int = 0)(implicit model: Model): IntVar = {
     val value   = IntVar()
     val c       = new Element(index, xs.toArray, value, offset)
     if (trace) println(c)
@@ -1028,22 +1028,4 @@ package object poirot {
     * @return related indomain method.
     */
   def indomainRandomSet[A <: jset.SetVar] = new IndomainSetRandom[A]
-
-  // ---- implicit enrichments ----
-
-  implicit class Reifier(val peer: PrimitiveConstraint) extends AnyVal {
-    def <=> (b: BooleanVar)(implicit model: Model): Constraint = {
-      val c = new Reified(peer, b)
-      model.constr.remove(model.constr.length - 1)
-      model.constr += c
-      c
-    }
-  }
-
-  implicit class IntVarIterable(val peer: IIterable[IntVar]) extends AnyVal {
-    def allDifferent()(implicit model: Model): Unit = poirot.allDifferent(peer)
-    def allDistinct ()(implicit model: Model): Unit = poirot.allDistinct (peer)
-
-    // def sum(implicit model: Model): IntVar = poirot.sum(peer)
-  }
 }

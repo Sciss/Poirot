@@ -1,6 +1,8 @@
 package de.sciss.poirot
 package examples
 
+import Implicits._
+
 /** Example which solves a simple conference session placement problem.
   * 
   * @author Krzysztof Kuchcinski & Radoslaw Szymanek

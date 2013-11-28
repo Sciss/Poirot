@@ -1,6 +1,8 @@
 package de.sciss.poirot
 package examples
 
+import Implicits._
+
 /** Solves a simple logic puzzle about music concert.
   *
   * Tim and Keri have a full day ahead for themselves as they plan to see

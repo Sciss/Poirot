@@ -1,6 +1,8 @@
 package de.sciss.poirot
 package examples
 
+import Implicits._
+
 /** Solves a simple logic puzzle about reporters breaking news stories.
   *
   * Logic Puzzle : Breaking News.

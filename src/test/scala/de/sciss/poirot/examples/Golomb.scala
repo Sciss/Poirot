@@ -1,6 +1,8 @@
 package de.sciss.poirot
 package examples
 
+import Implicits._
+
 object Golomb extends App with Problem {
   val start = System.currentTimeMillis()
 

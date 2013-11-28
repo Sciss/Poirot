@@ -1,6 +1,8 @@
 package de.sciss.poirot
 package examples
 
+import Implicits._
+
 object QueenGlobal extends App with Problem {
   val n = 100
 

@@ -1,6 +1,8 @@
 package de.sciss.poirot
 package examples
 
+import Implicits._
+
 /** A simple logic puzzle about shoe purchases.
   *
   * Logic Puzzle
