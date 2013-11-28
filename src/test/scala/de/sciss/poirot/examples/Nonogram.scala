@@ -7,7 +7,6 @@ import java.io.FileReader
 import java.io.IOException
 import scala.collection.mutable
 import org.jacop.constraints.ExtensionalSupportMDD
-import collection.immutable.{IndexedSeq => Vec}
 
 /** Solves a nonogram example problem, sometimes also called Paint by Numbers.
  *

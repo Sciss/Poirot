@@ -34,8 +34,6 @@ package examples
  *
  */
 
-import collection.immutable.{IndexedSeq => Vec}
-
 object BreakingNews extends App with Problem {
   println("Program to solve Breaking News ")
 
@@ -67,9 +65,9 @@ object BreakingNews extends App with Problem {
   // It is not possible that one person has two names, or
   // has been in two locations.
 
-  allDifferent(reporter: _*)
-  allDifferent(location: _*)
-  allDifferent(story   : _*)
+  reporter.allDifferent()
+  location.allDifferent()
+  story  . allDifferent()
 
   // 1. The 30-pound baby wasn't born in South Amboy or New Hope.
   OR( story(i30pound) #!= location(iNewHope), story(i30pound) #!= location(iSouthAmboy))

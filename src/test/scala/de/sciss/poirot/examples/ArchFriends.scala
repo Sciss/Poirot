@@ -1,47 +1,42 @@
 package de.sciss.poirot
 package examples
 
-import collection.immutable.{IndexedSeq => Vec}
-
-/**
- * 
- * It is a simple logic puzzle about shoe purchases.
- * 
- * @author Adam Plonka, Piotr Ogrodzki, and Radoslaw Szymanek
- * 
- * Logic Puzzle
-
- * Title       : Arch Friends
- * Author      : Mark T. Zegarelli
- * Publication : Dell Logic Puzzles
- * Issue       : April, 1998
- * Page        : 7
- * Stars       : 1
-
- * Description : 
-
- * Harriet, upon returning from the mall, is happily describing her
- * four shoe purchases to her friend Aurora. Aurora just loves the four
- * different kinds of shoes that Harriet bought (ecru espadrilles,
- * fuchsia flats, purple pumps, and suede sandals), but Harriet can't
- * recall at which different store (Foot Farm, Heels in a Handcart, The
- * Shoe Palace, or Tootsies) she got each pair. Can you help these two
- * figure out the order in which Harriet bought each pair of shoes, and
- * where she bought each?
- */
-
+/** A simple logic puzzle about shoe purchases.
+  *
+  * Logic Puzzle
+  *
+  * Title       : Arch Friends
+  * Author      : Mark T. Zegarelli
+  * Publication : Dell Logic Puzzles
+  * Issue       : April, 1998
+  * Page        : 7
+  * Stars       : 1
+  *
+  * Description :
+  *
+  * Harriet, upon returning from the mall, is happily describing her
+  * four shoe purchases to her friend Aurora. Aurora just loves the four
+  * different kinds of shoes that Harriet bought (ecru espadrilles,
+  * fuchsia flats, purple pumps, and suede sandals), but Harriet can't
+  * recall at which different store (Foot Farm, Heels in a Handcart, The
+  * Shoe Palace, or Tootsies) she got each pair. Can you help these two
+  * figure out the order in which Harriet bought each pair of shoes, and
+  * where she bought each?
+  *
+  * @author Adam Plonka, Piotr Ogrodzki, and Radoslaw Szymanek, clean up by H. H. Rutz
+  */
 object ArchFriends extends App with Problem {
   println("Program to solve ArchFriends problem")
 
   // Declaration of constants (names, variables' indexes
 
-  val shoeNames = Array( "EcruEspadrilles", "FuchsiaFlats", "PurplePumps", "SuedeSandals" )
+  val shoeNames = Vec("EcruEspadrilles", "FuchsiaFlats", "PurplePumps", "SuedeSandals")
 
-  val iFuchsiaFlats = 1; val iPurplePumps = 2; val iSuedeSandals = 3; /* iEcruEspadrilles = 0, */ 
+  val iFuchsiaFlats = 1; val iPurplePumps = 2; val iSuedeSandals = 3  /* iEcruEspadrilles = 0, */
 
-  val shopNames = Array( "FootFarm", "HeelsInAHandcart", "TheShoePalace", "Tootsies" )
+  val shopNames = Vec("FootFarm", "HeelsInAHandcart", "TheShoePalace", "Tootsies")
 
-  val iFootFarm = 0; val iHeelsInAHandcart = 1; val iTheShoePalace = 2; val iTootsies = 3;
+  val iFootFarm = 0; val iHeelsInAHandcart = 1; val iTheShoePalace = 2; val iTootsies = 3
 
   // Variables shoe and shop
 
@@ -52,8 +47,8 @@ object ArchFriends extends App with Problem {
   val shop = Vec.tabulate(4)(i => IntVar(shopNames(i), 1, 4))
 
   // Each shoe, shop have to have a unique identifier.
-  allDifferent(shoe: _*)
-  allDifferent(shop: _*)
+  shoe.allDifferent()
+  shop.allDifferent()
 
   // Constraints given in the problem description.
 

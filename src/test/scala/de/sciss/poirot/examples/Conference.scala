@@ -1,8 +1,6 @@
 package de.sciss.poirot
 package examples
 
-import collection.immutable.{IndexedSeq => Vec}
-
 /** Example which solves a simple conference session placement problem.
   * 
   * @author Krzysztof Kuchcinski & Radoslaw Szymanek
@@ -40,19 +38,19 @@ object Conference extends App with Problem {
   sessions(iE) #!= sessions(iK)
 
   // different times - B, G, H, I
-  allDifferent(List(iB, iG, iH, iI).map(sessions.apply): _*)
+  List(iB, iG, iH, iI).map(sessions).allDifferent()
 
   // different times - A, B, C, H
-  allDifferent(List(iA, iB, iC, iH).map(sessions.apply): _*)
+  List(iA, iB, iC, iH).map(sessions).allDifferent()
 
   // different times - A, E, G
-  allDifferent(List(iA, iE, iG).map(sessions.apply): _*)
+  List(iA, iE, iG).map(sessions).allDifferent()
 
   // different times - B, H, K
-  allDifferent(List(iB, iH, iK).map(sessions.apply): _*)
+  List(iB, iH, iK).map(sessions).allDifferent()
 
   // different times - D, F, J
-  allDifferent(List(iD, iF, iJ).map(sessions.apply): _*)
+  List(iD, iF, iJ).map(sessions).allDifferent()
 
   // sessions precedence
 

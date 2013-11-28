@@ -1,7 +1,7 @@
 package de.sciss
 
 import scala.reflect.ClassTag
-import collection.immutable.{IndexedSeq => Vec, Iterable => IIterable}
+import collection.immutable.{Iterable => IIterable}
 import scala.collection.{mutable, breakOut}
 import org.jacop.search._
 import org.jacop.{core => jc}
@@ -19,6 +19,8 @@ import org.jacop.set.search._
   * methods for JaCoP constraint solver in Scala.
   */
 package object poirot {
+  type Vec[+A]  = collection.immutable.IndexedSeq[A]
+  val  Vec      = collection.immutable.IndexedSeq
 
   var trace = false
 
@@ -42,9 +44,9 @@ package object poirot {
 
   /** Wrapper for [[org.jacop.constraints.Alldiff]].
     *
-    * @param xs array of variables to be different.
+    * @param xs set of variables to be different.
     */
-  def allDifferent(xs: IntVar*)(implicit model: Model): Unit = {
+  def allDifferent(xs: IIterable[IntVar])(implicit model: Model): Unit = {
     val c = new Alldiff(xs.toArray[jc.IntVar])
     if (trace) println(c)
     model.impose(c)
@@ -52,9 +54,9 @@ package object poirot {
 
   /** Wrapper for [[org.jacop.constraints.Alldistinct]].
     *
-    * @param xs array of variables to be different.
+    * @param xs set of variables to be different.
     */
-  def allDistinct(xs: IntVar*)(implicit model: Model): Unit = {
+  def allDistinct(xs: IIterable[IntVar])(implicit model: Model): Unit = {
     val c = new Alldistinct(xs.toArray[jc.IntVar])
     if (trace) println(c)
     model.impose(c)
@@ -1025,4 +1027,8 @@ package object poirot {
     }
   }
 
+  implicit class IntVarIterable(val peer: IIterable[IntVar]) extends AnyVal {
+    def allDifferent()(implicit model: Model): Unit = poirot.allDifferent(peer)
+    def allDistinct ()(implicit model: Model): Unit = poirot.allDistinct (peer)
+  }
 }

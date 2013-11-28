@@ -32,8 +32,6 @@
 //package de.sciss.poirot
 //package examples
 //
-//import collection.immutable.{IndexedSeq => Vec}
-//
 ///**
 // *
 // * It is quite complex logic puzzle about flowers.

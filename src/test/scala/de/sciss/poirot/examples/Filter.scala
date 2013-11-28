@@ -1,8 +1,6 @@
 package de.sciss.poirot
 package examples
 
-import collection.immutable.{IndexedSeq => Vec}
-
 object Filter extends App with Problem {
   val addId = 1
   val mulId = 2

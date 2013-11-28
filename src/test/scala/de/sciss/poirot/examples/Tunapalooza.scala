@@ -1,8 +1,6 @@
 package de.sciss.poirot
 package examples
 
-import collection.immutable.{IndexedSeq => Vec}
-
 /** Solves a simple logic puzzle about music concert.
   *
   * Tim and Keri have a full day ahead for themselves as they plan to see
@@ -70,8 +68,8 @@ object Tunapalooza extends App with Problem {
   vars ++= places
 
    // All types and places have to be associated with different band.
-   allDifferent(types : _*)
-   allDifferent(places: _*)
+   types .allDifferent()
+   places.allDifferent()
 
   // 1. Korrupt isn't a country or grunge music band.
 

@@ -1,8 +1,6 @@
 //package de.sciss.poirot
 //package examples
 //
-//import collection.immutable.{IndexedSeq => Vec}
-//
 ///** Models Travelling Salesman Problem (TSP).
 // *
 // * @author Krzysztof Kuchcinski

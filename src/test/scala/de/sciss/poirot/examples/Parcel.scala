@@ -1,8 +1,6 @@
 //package de.sciss.poirot
 //package examples
 //
-//import collection.immutable.{IndexedSeq => Vec}
-//
 ///** Solves a simple parcel shipment problem.
 //  *
 //  * @author Radoslaw Szymanek, clean up by H. H. Rutz

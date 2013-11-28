@@ -6,7 +6,6 @@ import java.io.FileNotFoundException
 import java.io.FileReader
 import java.io.IOException
 import java.util.StringTokenizer
-import collection.immutable.{IndexedSeq => Vec}
 import scala.collection.mutable
 
 
