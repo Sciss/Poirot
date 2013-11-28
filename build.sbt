@@ -10,7 +10,7 @@ description  := "A Scala front-end for the JaCoP constraints solver library"
 
 homepage     := Some(url("https://github.com/Sciss/" + name.value))
 
-licenses     := Seq("GPL v3+" -> url("http://www.gnu.org/licenses/gpl-3.0.txt"))
+licenses     := Seq("AGPL v3" -> url("http://www.gnu.org/licenses/agpl-3.0.txt"))
 
 libraryDependencies ++= Seq(
   "de.sciss" % "jacop" % "3.3.+"
