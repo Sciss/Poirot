@@ -8,7 +8,7 @@ object Golomb extends App with Problem {
   val m = 8
   val n = m*m
 
-  val mark = Vec.tabulate(m)(i => new IntVar("mark" + i, 0, n))
+  val mark = Vec.tabulate(m)(i => IntVar("mark" + i, 0, n))
 
   val differences =
     for {

@@ -43,15 +43,15 @@ object BIBD {
 
     // sum on rows
     for (i <- 0 until v)
-      sum(x(i): _*) #= r // (new IntVar(0,0)/:x(i)) (_ + _)  #= r
+      sum(x(i)) #= r // (new IntVar(0,0)/:x(i)) (_ + _)  #= r
 
     // sum on columns
     for (j <- 0 until b)
-      sum(List.tabulate(v)(i => x(i)(j)): _*) #= k
+      sum(List.tabulate(v)(i => x(i)(j))) #= k
 
     for ( i <- 0 to v)
       for ( j <- i+1 until v)
-        sum(List.tabulate(b)(m => x(i)(m) & x(j)(m)): _*) #= lambda
+        sum(List.tabulate(b)(m => x(i)(m) & x(j)(m))) #= lambda
 
     val result = satisfy(search(x.flatMap(_.toList), firstFail, indomainMin))
 

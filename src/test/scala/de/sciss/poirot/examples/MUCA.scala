@@ -7,7 +7,7 @@ import java.io.FileReader
 import java.io.IOException
 import java.util.StringTokenizer
 import scala.collection.mutable
-
+import collection.breakOut
 
 /** Solves the Mixed Multi-Unit Combinatorial Auctions.
   *
@@ -141,11 +141,11 @@ object MUCA extends Problem {
     for (bid <- bids) {
       var max = 0
 
-      for (bid_xor <- bid) {
+      for (bidXor <- bid) {
 
-        noAvailableTransformations += bid_xor.length
-        if (bid_xor.length > max)
-          max = bid_xor.length
+        noAvailableTransformations += bidXor.length
+        if (bidXor.length > max)
+          max = bidXor.length
       }
 
       maxNoTransformations += max
@@ -162,7 +162,7 @@ object MUCA extends Problem {
 
     // for each set of transformations create an among
 
-    var usedTransformation = Array.tabulate(noAvailableTransformations)(i => IntVar("isUsed_" + (i + 1), 0, 1))
+    val usedTransformation = Array.tabulate(noAvailableTransformations)(i => IntVar("isUsed_" + (i + 1), 0, 1))
 
     for (i <- 0 until noAvailableTransformations)
       among(transitions, IntSet(i + 1, i + 1), usedTransformation(i))
@@ -175,17 +175,11 @@ object MUCA extends Problem {
     bidCosts = List[IntVar]()
 
     for (bid <- bids) {
-      val nVars   = new Array[IntVar](bid.length + 1)
-      val tuples  = new Array[Array[Int]](bid.length + 1)
-      // tuples[0] denotes [0, 0, ....] so bid is not used.
-      tuples(0) = new Array[Int](bid.length + 1)
-
-      var i = 0
-      for (bid_xor <- bid) {
+      val tuplesTail: Vec[(IntVar, Vec[Int])] = bid.zipWithIndex.map { case (bidXor, i) =>
         var kSet = IntSet()
 
-        var xorUsedTransformation = mutable.Buffer.empty[IntVar]
-        for (t <- bid_xor) {
+        var xorUsedTransformation = Vec.empty[IntVar]
+        for (t <- bidXor) {
           noTransformations += 1
           t.id = noTransformations
           // + is set union ;)
@@ -194,26 +188,29 @@ object MUCA extends Problem {
         }
 
         val n = IntVar("ind_" + no + "_" + i, 0, 0)
-        n.addDom(bid_xor.length, bid_xor.length)
+        n.addDom(bidXor.length, bidXor.length)
 
-        sum(xorUsedTransformation: _*) #= n
+        sum(xorUsedTransformation) #= n
 
         usedXorBids :+= n
 
-        i += 1
-        nVars(i) = n
-        tuples(i) = new Array[Int](bid.length + 1)
-        tuples(i)(0) = costs(no)(i - 1)
-        tuples(i)(i) = n.max()
+        // val tuples(i) = new Array[Int](bid.length + 1)
+        val tup = Vec.tabulate(bid.size + 1) {
+          case 0                => costs(no)(i)
+          case j if j == i + 1  => n.max()
+          case _                => 0
+        }
 
         among(transitions, kSet, n)
-
-      }
+        
+        (n, tup)
+      } (breakOut)
 
       val bidCost = IntVar("bidCost" + (bidCosts.length + 1), minCost, maxCost)
-      nVars(0) = bidCost
-
-      table(nVars.toList, tuples)
+      
+      val tuples  = (bidCost, Vec.fill(bid.length + 1)(0)) +: tuplesTail
+      
+      table(tuples)
 
       bidCosts :+= bidCost
 
@@ -232,11 +229,11 @@ object MUCA extends Problem {
       tuples4transitions :+= dummyTransition
 
       bids.foreach(bid =>
-        bid.foreach(bid_xor =>
-          bid_xor.foreach(t =>
+        bid.foreach(bidXor =>
+          bidXor.foreach(t =>
             tuples4transitions :+= Array[Int](t.id, -t.getDeltaInput(g), t.getDeltaOutput(g)))))
 
-      val tuples = tuples4transitions.toArray
+      val tuples = tuples4transitions.map(_.toIndexedSeq)
 
       var previousPartialSum = IntVar("initialQuantity_" + g, initialQuantity(g), initialQuantity(g))
 
@@ -244,12 +241,12 @@ object MUCA extends Problem {
 
         var vars = Vec[IntVar]()
         vars :+= transitions(i)
-        deltasI(i)(g) = new IntVar("deltaI_g" + g + "t" + i, minDelta, maxDelta)
+        deltasI(i)(g) = IntVar("deltaI_g" + g + "t" + i, minDelta, maxDelta)
         vars :+= deltasI(i)(g)
-        deltasO(i)(g) = new IntVar("deltaO_g" + g + "t" + i, minDelta, maxDelta)
+        deltasO(i)(g) = IntVar("deltaO_g" + g + "t" + i, minDelta, maxDelta)
         vars :+= deltasO(i)(g)
 
-        table(vars.toList, tuples)
+        table(vars zip tuples)
 
         (previousPartialSum + deltasI(i)(g)) #> -1
 
@@ -266,29 +263,29 @@ object MUCA extends Problem {
 
     for (g <- 0 until noGoods) {
 
-      val weights = new Array[IntVar](usedTransformation.length + 1)
-      weights(0) = IntVar(String.valueOf(initialQuantity(g)) + "of-g" + g,
-        initialQuantity(g), initialQuantity(g))
+      var weights = Vec.empty[IntVar]
+      weights = weights updated (0, IntVar(s"${initialQuantity(g)}of-g$g", initialQuantity(g), initialQuantity(g)))
 
       for (bid <- bids) {
-        for (bid_xor <- bid) {
-          for (t <- bid_xor) {
-            if (t.getDelta(g) >= 0)
-              weights(t.id) = IntVar("delta_tid_" + t.id + "_g" + g, 0, t.getDelta(g))
+        for (bidXor <- bid) {
+          for (t <- bidXor) {
+            weights = weights updated (t.id, if (t.getDelta(g) >= 0)
+              IntVar("delta_tid_" + t.id + "_g" + g, 0, t.getDelta(g))
             else
-              weights(t.id) = IntVar("delta_t" + t.id + "_g", t.getDelta(g), 0)
-
-            val tuples = Array(Array(0, 0), Array(1, t.getDelta(g)))
-            val vars = Array(usedTransformation(t.id - 1), weights(t.id))
-
-            table(vars.toList, tuples)
+              IntVar("delta_t" + t.id + "_g", t.getDelta(g), 0)
+            )
+            val vars    = List(
+              usedTransformation(t.id - 1) -> List(0, 0),
+              weights           (t.id    ) -> List(1, t.getDelta(g))
+            )
+            table(vars)
           }
         }
       }
-      sum(weights: _*) #= summa(g)
+      sum(weights.toList) #= summa(g)
     }
 
-    cost = sum(bidCosts: _*)
+    cost = sum(bidCosts)
 
     searchSpecial()
   }
@@ -407,10 +404,10 @@ object MUCA extends Problem {
       line = br.readLine()
 
       var bidCounter            = 1
-      var bid_xorCounter        = 1
+      var bidXorCounter         = 1
       var transformationCounter = 0
       var goodsCounter          = 0
-      var Id=0; var in=0; var  out=0
+      var Id=0; var in=0; var out=0
 
       var input   : Array[Int] = null
       var output  : Array[Int] = null
@@ -425,25 +422,25 @@ object MUCA extends Problem {
 
         if (tk.nextToken().toInt > bidCounter) {
           bidCounter += 1
-          bid_xorCounter = 1
+          bidXorCounter = 1
           transformationCounter = 1
 
           bids :+= mutable.Buffer[mutable.Buffer[Transformation]]()
           bids(bidCounter - 1) :+= mutable.Buffer.empty[Transformation]
         }
-        // 				System.out.println(bidCounter + " " + bid_xorCounter);
-        if (tk.nextToken().toInt > bid_xorCounter) {
-          bid_xorCounter       += 1
+        // 				System.out.println(bidCounter + " " + bidXorCounter);
+        if (tk.nextToken().toInt > bidXorCounter) {
+          bidXorCounter       += 1
           transformationCounter = 1
 
           bids(bidCounter - 1) :+= mutable.Buffer.empty[Transformation]
         }
         // this token contains the number of the transformation
         tk.nextToken()
-        bids(bidCounter - 1)(bid_xorCounter - 1) :+= new Transformation()
+        bids(bidCounter - 1)(bidXorCounter - 1) :+= new Transformation()
 
-        bids(bidCounter - 1)(bid_xorCounter - 1)(transformationCounter - 1).goodsIds  = mutable.Buffer.empty[Int]
-        bids(bidCounter - 1)(bid_xorCounter - 1)(transformationCounter - 1).delta     = mutable.Buffer.empty[Delta]
+        bids(bidCounter - 1)(bidXorCounter - 1)(transformationCounter - 1).goodsIds  = mutable.Buffer.empty[Int]
+        bids(bidCounter - 1)(bidXorCounter - 1)(transformationCounter - 1).delta     = mutable.Buffer.empty[Delta]
 
         input   = new Array[Int](noGoods)
         output  = new Array[Int](noGoods)
@@ -473,9 +470,9 @@ object MUCA extends Problem {
 
           if (output(i) != 0 || input(i) != 0) {
             // 						System.out.print(i + " " + input[i] + ":" + output[i] + " ");
-            // 						System.out.println(bidCounter + " " + bid_xorCounter + " " + transformationCounter + " " + i + " " + delta);
-            bids(bidCounter - 1)(bid_xorCounter - 1)(transformationCounter - 1).goodsIds :+= i
-            bids(bidCounter - 1)(bid_xorCounter - 1)(transformationCounter - 1).delta :+= new Delta(input(i), output(i))
+            // 						System.out.println(bidCounter + " " + bidXorCounter + " " + transformationCounter + " " + i + " " + delta);
+            bids(bidCounter - 1)(bidXorCounter - 1)(transformationCounter - 1).goodsIds :+= i
+            bids(bidCounter - 1)(bidXorCounter - 1)(transformationCounter - 1).delta :+= new Delta(input(i), output(i))
           }
         }
         // 				System.out.print("\n");
@@ -508,7 +505,6 @@ object MUCA extends Problem {
         line = br.readLine()
 
       }
-
     }
     catch {
       case ex: FileNotFoundException => {
@@ -518,6 +514,7 @@ object MUCA extends Problem {
       }
       case ex: IOException => {
         Console.err.println(ex)
+        sys.exit(-1)
       }
     }
 

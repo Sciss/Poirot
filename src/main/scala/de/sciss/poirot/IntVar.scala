@@ -64,7 +64,7 @@ object IntVar {
 }
 /** Defines a finite domain integer variable and its primitive constraints.
   */
-class IntVar private[poirot](name: String, min: Int, max: Int)(implicit model: Model)
+class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
   extends jc.IntVar(model, name, min, max) {
 
   /** Defines add constraint between two IntVar.

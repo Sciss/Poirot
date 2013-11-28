@@ -95,13 +95,13 @@ object Tunapalooza extends App with Problem {
   val statement1  = BooleanVar("s1")
   val statement2  = BooleanVar("s2")
   val statement3  = BooleanVar("s3")
-  val statements  = Seq(statement1, statement2, statement3)
+  val statements  = List(statement1, statement2, statement3)
 
   (grunge #= Ellyfish) <=> statement1
   statement2           <=> (information #!= Retread)
   statement3           <=> (vendor      #!= Yellow )
 
-  sum(statements: _*) #= 2
+  sum(statements) #= 2
 
   vars ++= statements
 

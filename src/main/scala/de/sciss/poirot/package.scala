@@ -89,7 +89,7 @@ package object poirot {
     * @param xs variables to be summed up.
     * @return summation result.
     */
-  def sum(xs: IntVar*)(implicit model: Model): IntVar = {
+  def sum(xs: IIterable[IntVar])(implicit model: Model): IntVar = {
     val result    = IntVar()
     val c         = new Sum(xs.toArray[jc.IntVar], result)
     model.constr += c
@@ -361,13 +361,14 @@ package object poirot {
 
   /** Wrapper for [[org.jacop.constraints.ExtensionalSupportVA]].
     *
-    * XXX TODO: remove arrays, unify sequences, rename to `assignTable`, add proper `table`
+    * XXX TODO: rename to `assignTable`, add proper `table`
     *
-    * @param list   array of variables.
-    * @param tuples array of tuples allowed to be assigned to variables.
+    * @param list   sequence of tuples consisting of variables and sequences of allowed values be assigned
     */
-  def table(list: IIterable[IntVar], tuples: Array[Array[Int]])(implicit model: Model): Unit = {
-    val c = new ExtensionalSupportVA(list.toArray[jc.IntVar], tuples)
+  def table(list: IIterable[(IntVar, IIterable[Int])])(implicit model: Model): Unit = {
+    val (xs, tup) = list.unzip
+    val arr: Array[Array[Int]] = tup.map(_.toArray)(breakOut)
+    val c = new ExtensionalSupportVA(xs.toArray[jc.IntVar], arr)
     if (trace) println(c)
     model.impose(c)
   }
@@ -1030,5 +1031,7 @@ package object poirot {
   implicit class IntVarIterable(val peer: IIterable[IntVar]) extends AnyVal {
     def allDifferent()(implicit model: Model): Unit = poirot.allDifferent(peer)
     def allDistinct ()(implicit model: Model): Unit = poirot.allDistinct (peer)
+
+    // def sum(implicit model: Model): IntVar = poirot.sum(peer)
   }
 }
