@@ -110,12 +110,12 @@ package object poirot {
 
   /** Wrapper for [[org.jacop.constraints.SumWeight]].
     *
-    * @param xs tuples consisting of variables and their respective weights
-    * @return summation result.
+    * @param vars     variables to sum
+    * @param weights  weights for the variables
+    * @return         summation result.
     */
-  def weightedSum(xs: (IntVar, Int)*)(implicit model: Model): IntVar = {
+  def weightedSum(vars: ISeq[IntVar], weights: ISeq[Int])(implicit model: Model): IntVar = {
     val result          = IntVar()
-    val (vars, weights) = xs.unzip
     val c               = new SumWeight(vars.toArray[jc.IntVar], weights.toArray[Int], result)
     if (trace) println(c)
     model.impose(c)

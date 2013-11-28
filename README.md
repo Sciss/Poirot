@@ -10,8 +10,6 @@ Poirot is released under the [GNU Affero General Public License](http://github.c
 and comes with absolutely no warranties. Please see the [JaCoP](http://jacop.osolpro.com/index.php?option=com_content&view=article&id=5&Itemid=2)
 website for supplementary AGPL terms. To contact the author, send an email to `contact at sciss.de`
 
-__Note__: Not all examples are translated / adjusted yet.
-
 ## linking
 
 To use this project as a library, use the following artifact:
@@ -46,9 +44,6 @@ For example, have a look at the standard n-Queens problem, `Queen.scala`.
 ## limitations
 
 I am currently figuring out how to best handle the syntax. No all methods from the original Scala DSL are implemented.
-You will also see that not all original examples are implemented or converted yet. An open questions is the handling
-of e.g. `min` versus `assignMin`, that is cases which would appear as a normal operator but in certain scenarios require
-the provision of an a-priori defined result variable.
 
 I have only worked with int and boolean variables, so pretty much everything regarding `SetVar`, `IntSet`, `FSM`,
 `Network` is not tested or cleaned up.
