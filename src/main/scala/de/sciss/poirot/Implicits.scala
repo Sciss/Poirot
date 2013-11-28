@@ -26,7 +26,7 @@ object Implicits {
 
 
   implicit class Reifier(val peer: PrimitiveConstraint) extends AnyVal {
-    def <=> (b: BooleanVar)(implicit model: Model): Constraint = {
+    def #<-> (b: BooleanVar)(implicit model: Model): Constraint = {
       val c = new Reified(peer, b)
       model.constr.remove(model.constr.length - 1)
       model.constr += c

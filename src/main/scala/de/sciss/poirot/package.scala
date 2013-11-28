@@ -387,6 +387,8 @@ package object poirot {
 
   /** Wrapper for [[org.jacop.constraints.knapsack.Knapsack]].
     *
+    * XXX TODO: replace arrays, unify tuples
+    *
     * @param profits array of profite for items.
     * @param weights array of weights for items.
     * @param quantity array of quantities of items.

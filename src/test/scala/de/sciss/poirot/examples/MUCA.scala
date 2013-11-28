@@ -9,6 +9,8 @@ import java.util.StringTokenizer
 import scala.collection.mutable
 import collection.breakOut
 
+import Implicits._
+
 /** Solves the Mixed Multi-Unit Combinatorial Auctions.
   *
   * @author Radoslaw Szymanek (for Scala Krzysztof Kuchcinski)
@@ -156,8 +158,8 @@ object MUCA extends Problem {
 
     for (i <- 0 until maxNoTransformations - 1) {
       val b = BooleanVar("b" + i)
-      b <=> (transitions(i)     #= 0)
-      b  -> (transitions(i + 1) #= 0)
+      b #<-> (transitions(i)     #= 0)
+      b #->  (transitions(i + 1) #= 0)
     }
 
     // for each set of transformations create an among

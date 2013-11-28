@@ -99,9 +99,9 @@ object Tunapalooza extends App with Problem {
   val statement3  = BooleanVar("s3")
   val statements  = List(statement1, statement2, statement3)
 
-  (grunge #= Ellyfish) <=> statement1
-  statement2           <=> (information #!= Retread)
-  statement3           <=> (vendor      #!= Yellow )
+  (grunge #= Ellyfish) #<-> statement1
+  statement2           #<-> (information #!= Retread)
+  statement3           #<-> (vendor      #!= Yellow )
 
   sum(statements) #= 2
 

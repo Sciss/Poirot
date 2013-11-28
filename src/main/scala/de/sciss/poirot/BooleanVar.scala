@@ -121,7 +121,7 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     * @param thenConstr a primitive constraint that will hold if this variable is 1.
     * @return the defined constraint.
     */
-  def -> (thenConstr: PrimitiveConstraint): Constraint = {
+  def #-> (thenConstr: PrimitiveConstraint): Constraint = {
     val c = new IfThen(new XeqC(this, 1), thenConstr)
     model.constr.remove(model.constr.length - 1)
     model.constr += c
@@ -138,7 +138,7 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     * @param reifC a primitive constraint that is used in reification.
     * @return the defined constraint.
     */
-  def <=> (reifC: PrimitiveConstraint): Constraint = {
+  def #<-> (reifC: PrimitiveConstraint): Constraint = {
     val c = new Reified(reifC, this)
     model.constr.remove(model.constr.length - 1)
     model.constr += c
