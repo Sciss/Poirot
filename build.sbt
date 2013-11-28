@@ -48,11 +48,21 @@ pomExtra := { val n = name.value
   <connection>scm:git:git@github.com:Sciss/{n}.git</connection>
 </scm>
 <developers>
-   <developer>
-      <id>sciss</id>
-      <name>Hanns Holger Rutz</name>
-      <url>http://www.sciss.de</url>
-   </developer>
+  <developer>
+    <id>sciss</id>
+    <name>Hanns Holger Rutz</name>
+    <url>http://www.sciss.de</url>
+  </developer>
+  <developer>
+    <id>kris</id>
+    <name>Krzysztof Kuchcinski</name>
+    <email>krzysztof.kuchcinski@cs.lth.se</email>
+    <roles>
+      <role>Core developer</role>
+    </roles>
+    <organization>cs.lth.se</organization>
+    <timezone>+1</timezone>
+  </developer>
 </developers>
 }
 
