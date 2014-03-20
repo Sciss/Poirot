@@ -1,10 +1,12 @@
 name         := "Poirot"
 
-version      := "0.1.0"
+version      := "0.2.0"
 
 organization := "de.sciss"
 
 scalaVersion := "2.10.3"
+
+crossScalaVersions := Seq("2.11.0-RC3", "2.10.3")
 
 description  := "A Scala front-end for the JaCoP constraints solver library"
 
@@ -13,10 +15,10 @@ homepage     := Some(url("https://github.com/Sciss/" + name.value))
 licenses     := Seq("AGPL v3" -> url("http://www.gnu.org/licenses/agpl-3.0.txt"))
 
 libraryDependencies ++= Seq(
-  "de.sciss" % "jacop" % "3.3.+"
+  "de.sciss" % "jacop" % "3.4.+"
 )
 
-retrieveManaged := true
+// retrieveManaged := true
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature")
 

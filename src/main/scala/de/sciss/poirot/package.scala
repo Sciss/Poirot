@@ -470,7 +470,7 @@ package object poirot {
     * @param xVars    array of variables to be constrained to be different.
     * @param costVar  measures degree of violation (uses value based violation).
     */
-  def softAlldifferent(xVars: Array[IntVar], costVar: IntVar)(implicit model: Model): Unit = {
+  def softAllDifferent(xVars: Array[IntVar], costVar: IntVar)(implicit model: Model): Unit = {
     val violationMeasure = ViolationMeasure.VALUE_BASED
     val c = new SoftAlldifferent(xVars.asInstanceOf[Array[jc.IntVar]], costVar, violationMeasure)
     if (trace) println(c)

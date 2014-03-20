@@ -14,6 +14,24 @@ object BooleanVar {
     res
   }
 
+  /** Convenience constructor which creates a boolean variable
+    * reifying the given constraint.
+    *
+    * This a shortcut for
+    * {{
+    * val b = BooleanVar()
+    * b #<-> constr
+    * b
+    * }}
+    *
+    * @param constr the constraint which will be removed from its model and replaced with a reified constraint
+    */
+  def apply(constr: PrimitiveConstraint)(implicit model: Model): BooleanVar = {
+    val b = apply()(model)
+    b #<-> constr
+    b
+  }
+
   /** Creates a new boolean variable, using an automatically generated name. */
   def apply()(implicit model: Model): BooleanVar = apply("_$" + model.n)
 }
@@ -122,8 +140,10 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     * @return the defined constraint.
     */
   def #-> (thenConstr: PrimitiveConstraint): Constraint = {
-    val c = new IfThen(new XeqC(this, 1), thenConstr)
-    model.constr.remove(model.constr.length - 1)
+    val c   = new IfThen(new XeqC(this, 1), thenConstr)
+    val old = model.constr.remove(model.constr.length - 1)
+    if (old != thenConstr)
+      throw new IllegalStateException(s"Last constraint to model ($old) must be the implied constraint ($thenConstr)")
     model.constr += c
     c
   }
@@ -135,12 +155,14 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     * XXX TODO: this is ugly. A better solution would be to have `thenConstr` be
     * a call-by-name parameter and push a temporary model instead?
     *
-    * @param reifC a primitive constraint that is used in reification.
+    * @param reifiedConstr  a primitive constraint that is used in reification.
     * @return the defined constraint.
     */
-  def #<-> (reifC: PrimitiveConstraint): Constraint = {
-    val c = new Reified(reifC, this)
-    model.constr.remove(model.constr.length - 1)
+  def #<-> (reifiedConstr: PrimitiveConstraint): Constraint = {
+    val c   = new Reified(reifiedConstr, this)
+    val old = model.constr.remove(model.constr.length - 1)
+    if (old != reifiedConstr)
+      throw new IllegalStateException(s"Last constraint to model ($old) must be the constraint to be reified ($reifiedConstr)")
     model.constr += c
     c
   }

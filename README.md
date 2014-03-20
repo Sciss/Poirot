@@ -16,11 +16,11 @@ To use this project as a library, use the following artifact:
 
     "de.sciss" %% "poirot" % v
 
-The current version `v` is `0.1.+`
+The current version `v` is `0.2.+`
 
 ## building
 
-This project currently builds with sbt 0.13 against Scala 2.10. It requires the JaCoP 3.3.0 artifact published under
+This project currently builds with sbt 0.13 against Scala 2.10. It requires the JaCoP 3.4.0 artifact published under
 the `de.sciss` group ID. It should be automatically retrieved from Maven Central.
 
 To compile, use `sbt compile`, for the API docs `sbt doc`, to jump into a REPL `sbt console`.
