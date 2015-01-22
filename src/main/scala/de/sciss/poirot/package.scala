@@ -586,7 +586,7 @@ package object poirot {
     * @param a    a set variable to be matched against list of IntVar.
     * @param list variables that get values from the set.
     */
-  def matching[A <: jc.IntVar](a: SetVar, list: IIterable[A])(implicit model: Model) {
+  def matching[A <: jc.IntVar](a: SetVar, list: IIterable[A])(implicit model: Model): Unit = {
     val c = new Match(a, list.toArray)
     if (trace) println(c)
     model.impose(c)
