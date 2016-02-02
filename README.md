@@ -1,10 +1,14 @@
 # Poirot
 
+[![Flattr this](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=sciss&url=https%3A%2F%2Fgithub.com%2FSciss%2FPoirot&title=Poirot&language=Scala&tags=github&category=software)
+[![Build Status](https://travis-ci.org/Sciss/Poirot.svg?branch=master)](https://travis-ci.org/Sciss/Poirot)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.sciss/poirot_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.sciss/poirot_2.11)
+
 ## statement
 
 Poirot is a Scala front-end for the [JaCoP](https://github.com/Sciss/jacop) constraints solver library. It was
 originally based on the Scala DSL included with JaCoP, written and (C)opyright by Krzysztof Kuchcinski and
-Radoslaw Szymanek. All modifications and new interface (C)opyright 2013&ndash;2015 by Hanns Holger Rutz. All rights reserved.
+Radoslaw Szymanek. All modifications and new interface (C)opyright 2013&ndash;2016 by Hanns Holger Rutz. All rights reserved.
 
 Poirot is released under the [GNU Affero General Public License](http://github.com/Sciss/Poirot/blob/master/LICENSE)
 and comes with absolutely no warranties. Please see the [JaCoP](http://jacop.osolpro.com/index.php?option=com_content&view=article&id=5&Itemid=2)
@@ -24,6 +28,10 @@ This project currently builds with sbt 0.13 against Scala 2.11 and 2.10. It requ
 the `de.sciss` group ID. It should be automatically retrieved from Maven Central.
 
 To compile, use `sbt compile`, for the API docs `sbt doc`, to jump into a REPL `sbt console`.
+
+## contributing
+
+Please see the file [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## differences to the original Scala DSL
 
