@@ -1,6 +1,7 @@
 package de.sciss.poirot
 
 import org.jacop.util.{fsm => jfsm}
+
 import scala.collection.mutable
 
 /** FSM specification for regular constraint. */
@@ -16,7 +17,7 @@ class FSM private() extends jfsm.FSM {
     */
   def this(n: Int) = {
     this()
-    for (i <- 0 until n) add(State())
+    for (_ <- 0 until n) add(State())
   }
 
   /** Defines initial state for this FSM.
@@ -45,7 +46,7 @@ class FSM private() extends jfsm.FSM {
   }
 
   /** Number of states in this FSM. */
-  def length = states.length
+  def length: Int = states.length
 
   /** Gets the state n of this FSM.
     *

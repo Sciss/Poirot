@@ -1,5 +1,6 @@
 package de.sciss.poirot
 
+import org.jacop.constraints.netflow.simplex
 import org.jacop.constraints.{netflow => jnet}
 
 /** Network specification for networkflow constraint
@@ -11,7 +12,7 @@ class Network private extends jnet.NetworkBuilder {
 
   import scala.collection.mutable
 
-  val nodes = mutable.Map[Node, jnet.simplex.Node]()
+  val nodes: mutable.Map[Node, simplex.Node] = mutable.Map.empty
 
   /** Adds nodes to the network
     *

@@ -1,8 +1,9 @@
 package de.sciss.poirot
 
-import scala.collection.mutable
-import org.jacop.{core => jc}
 import org.jacop.constraints.Constraint
+import org.jacop.{core => jc}
+
+import scala.collection.mutable
 
 object Model {
   def apply(): Model = new Model

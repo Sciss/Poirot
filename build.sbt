@@ -1,26 +1,19 @@
 name         := "Poirot"
-
-version      := "0.2.0"
-
+version      := "0.3.0-SNAPSHOT"
 organization := "de.sciss"
-
-scalaVersion := "2.11.5"
-
-crossScalaVersions := Seq("2.11.5", "2.10.3")
-
+scalaVersion := "2.12.6"
+crossScalaVersions := Seq("2.12.6", "2.11.12")
 description  := "A Scala front-end for the JaCoP constraints solver library"
-
 homepage     := Some(url("https://github.com/Sciss/" + name.value))
-
 licenses     := Seq("AGPL v3" -> url("http://www.gnu.org/licenses/agpl-3.0.txt"))
 
 libraryDependencies ++= Seq(
-  "de.sciss" % "jacop" % "3.4.0"
+  "de.sciss" % "jacop" % "3.5.0-SNAPSHOT"
 )
 
-// retrieveManaged := true
-
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture")
+
+updateOptions := updateOptions.value.withLatestSnapshots(false)
 
 // ---- console ----
 
@@ -34,7 +27,7 @@ initialCommands in console :=
 publishMavenStyle := true
 
 publishTo :=
-  Some(if (version.value endsWith "-SNAPSHOT")
+  Some(if (isSnapshot.value)
     "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   else
     "Sonatype Releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"

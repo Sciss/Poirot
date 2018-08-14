@@ -1,7 +1,7 @@
 package de.sciss.poirot
 
 case class Stats(nodes: Int, decisions: Int, wrong: Int, backtracks: Int, depth: Int, solutions: Int) {
-  override def toString = "Search statistics:\n==================" +
+  override def toString: String = "Search statistics:\n==================" +
     "\n Search nodes           : " + nodes +
     "\n Search decisions       : " + decisions +
     "\n Wrong search decisions : " + wrong +

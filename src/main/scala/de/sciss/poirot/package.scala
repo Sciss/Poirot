@@ -1,19 +1,19 @@
 package de.sciss
 
-import scala.reflect.ClassTag
-import collection.immutable.{Iterable => IIterable, Seq => ISeq}
-import scala.collection.{mutable, breakOut}
-import org.jacop.search._
-import org.jacop.{core => jc}
-import org.jacop.constraints._
-import org.jacop.constraints.knapsack.Knapsack
 import org.jacop.constraints.binpacking.Binpacking
-import org.jacop.constraints.regular.Regular
+import org.jacop.constraints.knapsack.Knapsack
 import org.jacop.constraints.netflow.NetworkFlow
-import org.jacop.constraints.{netflow => jnet}
-import org.jacop.set.{core => jset}
-import org.jacop.set.constraints.{Match, CardA, CardAeqX}
+import org.jacop.constraints.regular.Regular
+import org.jacop.constraints.{netflow => jnet, _}
+import org.jacop.search._
+import org.jacop.set.constraints.{CardA, CardAeqX, Match}
 import org.jacop.set.search._
+import org.jacop.set.{core => jset}
+import org.jacop.{core => jc}
+
+import scala.collection.immutable.{Iterable => IIterable, Seq => ISeq}
+import scala.collection.{breakOut, mutable}
+import scala.reflect.ClassTag
 
 /** Package for defining variables, constraints, global constraints and search
   * methods for JaCoP constraint solver in Scala.
@@ -694,7 +694,7 @@ package object poirot {
 
     val masterLabel = dfs[A](all = false)
 
-    if (printSolutions.size > 0) {
+    if (printSolutions.nonEmpty) {
       // masterLabel.setSolutionListener(new EmptyListener[A])
       masterLabel.setPrintInfo(false)
     }
@@ -763,7 +763,7 @@ package object poirot {
 
     val masterLabel = dfs[A](all = all)
 
-    if (printSolutions.size > 0) {
+    if (printSolutions.nonEmpty) {
       // masterLabel.setSolutionListener(new EmptyListener[A])
       masterLabel.setPrintInfo(false)
     }
@@ -778,7 +778,7 @@ package object poirot {
       previousSearch.addChildSearch(label)
       label.setSelectChoicePoint(sel)
 
-      if (printSolutions.size > 0) {
+      if (printSolutions.nonEmpty) {
         // label.setSolutionListener(new EmptyListener[A])
         label.setPrintInfo(false)
       }
@@ -995,7 +995,7 @@ package object poirot {
     *
     * @return related variable selection method.
     */
-  def smallestSet[A <: jset.SetVar] = minGLBCard[A]
+  def smallestSet[A <: jset.SetVar]: MinGlbCard[A] = minGLBCard
 
   /** Wrapper for [[org.jacop.set.search.MinGlbCard]].
     *

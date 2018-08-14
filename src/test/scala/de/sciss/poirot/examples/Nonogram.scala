@@ -78,7 +78,7 @@ object Nonogram extends Problem {
         colRules = new Array[Array[Int]](dimensions(0))
 
         // Transforms strings into ints
-        for (i <- 0 until lines.length) {
+        for (i <- lines.indices) {
 
           val result = lines(i).split(" ")
 
@@ -90,7 +90,7 @@ object Nonogram extends Problem {
               sequence(current) = result(j).toInt
               current += 1
             } catch {
-              case ex: Exception => {}
+              case _: Exception =>
             }
           if (i < rowRules.length) rowRules(i) = sequence
           else
@@ -116,9 +116,9 @@ object Nonogram extends Problem {
 
     currentState ~> (white, currentState)
 
-    for (i <- 0 until sequence.length) {
+    for (i <- sequence.indices) {
       if (sequence(i) != 0) {
-        for (j <- 0 until sequence(i)) {
+        for (_ <- 0 until sequence(i)) {
           // Black transition
           val nextState = State()
           result       += nextState
@@ -164,7 +164,7 @@ object Nonogram extends Problem {
     println("Size " + vars.length)
 
     // Making sure that rows respect the rules.
-    for (i <- 0 until rowRules.length) {
+    for (i <- rowRules.indices) {
 
       val result = createAutomaton(rowRules(i))
 
@@ -180,7 +180,7 @@ object Nonogram extends Problem {
     }
 
     // Making sure that columns respect the rules.
-    for (i <- 0 until colRules.length) {
+    for (i <- colRules.indices) {
 
       val result = createAutomaton(colRules(i))
       val column = Array.tabulate(rowRules.length)(j => board(j)(i))
@@ -203,8 +203,8 @@ object Nonogram extends Problem {
     * @param matrix matrix containing the grounded variables.
     */
   def printMatrix(matrix: Array[Array[IntVar]]): Unit = {
-    for (i <- 0 until matrix.length) {
-      for (j <- 0 until matrix(i).length) {
+    for (i <- matrix.indices) {
+      for (j <- matrix(i).indices) {
         if (matrix(i)(j).value() == black)
           print("0")
         else

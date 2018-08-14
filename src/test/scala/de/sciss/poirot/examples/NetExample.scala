@@ -15,7 +15,7 @@ object NetExample extends App {
   assignment()
 
   def simpleNet(): Unit = {
-    implicit val model = Model()
+    implicit val model: Model = Model()
     
     var T1: Long = 0
     var T2: Long = 0 
@@ -91,7 +91,7 @@ object NetExample extends App {
   }
 
   def transportationProblem(): Unit = {
-    implicit val model = Model()
+    implicit val model: Model = Model()
     
     var T1: Long = 0
     var T2: Long = 0
@@ -181,7 +181,7 @@ object NetExample extends App {
   }
 
   def assignment(): Unit = {
-    implicit val model = Model()
+    implicit val model: Model = Model()
 
     var T1: Long = 0
     var T2: Long = 0

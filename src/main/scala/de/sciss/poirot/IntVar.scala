@@ -1,8 +1,8 @@
 package de.sciss.poirot
 
-import org.jacop.{core => jc}
 import org.jacop.constraints._
-import org.jacop.set.constraints.{XinA, EinA}
+import org.jacop.set.constraints.{EinA, XinA}
+import org.jacop.{core => jc}
 
 object IntVar {
   def apply(name: String, min: Int, max: Int)(implicit model: Model): IntVar =

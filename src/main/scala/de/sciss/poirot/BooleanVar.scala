@@ -1,7 +1,7 @@
 package de.sciss.poirot
 
-import org.jacop.{core => jc}
 import org.jacop.constraints._
+import org.jacop.{core => jc}
 
 object BooleanVar {
   /** Creates a new boolean variable.
@@ -88,7 +88,8 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     val result      = BooleanVar()
     val parameters  = Array[jc.IntVar](this, that)
     val c           = new AndBool(parameters, result)
-    model.constr   += c
+    c.imposeDecomposition(model)
+//    model.constr   += c
     result
   }
 
@@ -101,7 +102,8 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     val result      = BooleanVar()
     val parameters  = Array[jc.IntVar](this, that)
     val c           = new OrBool(parameters, result)
-    model.constr   += c
+    c.imposeDecomposition(model)
+//    model.constr   += c
     result
   }
 

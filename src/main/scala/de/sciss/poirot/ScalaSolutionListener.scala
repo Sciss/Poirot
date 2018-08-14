@@ -1,7 +1,7 @@
 package de.sciss.poirot
 
-import org.jacop.{core => jc}
 import org.jacop.search.{Search, SelectChoicePoint, SimpleSolutionListener}
+import org.jacop.{core => jc}
 
 /** Solution listener that prints solutions of search
   * using user specified functions.

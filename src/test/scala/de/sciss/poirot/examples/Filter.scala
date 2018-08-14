@@ -30,7 +30,7 @@ object Filter extends App with Problem {
   val r   = Vec.tabulate(ids.length)(i => if (ids(i) == addId) IntVar("r" + i, 1, 2) else IntVar("r" + i, 3, 4))
   val del = Vec.tabulate(ids.length)(i => if (ids(i) == addId) delAdd else delMul)
 
-  for (i <- 0 until dependencies.length)
+  for (i <- dependencies.indices)
     t(dependencies(i)(0)) + del(dependencies(i)(0)) #<= t(dependencies(i)(1))
 
   val endOps  = List.tabulate(last.length)(i => t(last(i)) + del(last(i)))

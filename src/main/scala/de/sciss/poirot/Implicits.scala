@@ -1,9 +1,10 @@
 package de.sciss.poirot
 
-import language.implicitConversions
-import org.jacop.constraints.{Reified, Constraint, PrimitiveConstraint}
-import scala.collection.immutable.{Seq => ISeq, Iterable => IIterable}
 import de.sciss.poirot
+import org.jacop.constraints.{Constraint, PrimitiveConstraint, Reified}
+
+import scala.collection.immutable.{Iterable => IIterable, Seq => ISeq}
+import scala.language.implicitConversions
 
 /** Implicit conversions of Int and Bool to IntVar and BoolVar.
   * Used in overloaded operators.
@@ -11,7 +12,7 @@ import de.sciss.poirot
 object Implicits {
   /** Converts integer to IntVar.
     *
-    * @param i intger to be converted.
+    * @param i integer to be converted.
     */
   implicit def intToJacopVar(i: Int)(implicit model: Model): IntVar = IntVar(i, i)
 

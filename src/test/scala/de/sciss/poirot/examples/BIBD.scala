@@ -29,7 +29,7 @@ object BIBD {
       lambda = args(4).toInt
     }
     catch {
-      case NonFatal(ex) =>
+      case NonFatal(_) =>
         println("Program parameters if provided must specify v, b, r, k, and lambda")
         sys.exit(1)
     }
@@ -37,7 +37,7 @@ object BIBD {
   }
 
   def run(): Unit = {
-    implicit val model = Model()
+    implicit val model: Model = Model()
 
     val x = List.tabulate(v,b)((i,j) => BooleanVar("x" + i + "_" + j))
 

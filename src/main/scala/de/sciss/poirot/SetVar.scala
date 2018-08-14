@@ -1,8 +1,8 @@
 package de.sciss.poirot
 
-import org.jacop.{set => jset, core => jc}
-import org.jacop.set.constraints._
 import org.jacop.constraints.Constraint
+import org.jacop.set.constraints._
+import org.jacop.{core => jc, set => jset}
 
 /** Defines a set variable and its primitive constraints.
   *

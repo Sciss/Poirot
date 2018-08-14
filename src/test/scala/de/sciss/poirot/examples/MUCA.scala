@@ -1,15 +1,10 @@
 package de.sciss.poirot
 package examples
 
-import java.io.BufferedReader
-import java.io.FileNotFoundException
-import java.io.FileReader
-import java.io.IOException
+import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import java.util.StringTokenizer
-import scala.collection.mutable
-import collection.breakOut
 
-import Implicits._
+import scala.collection.{breakOut, mutable}
 
 /** Solves the Mixed Multi-Unit Combinatorial Auctions.
   *
@@ -339,7 +334,7 @@ object MUCA extends Problem {
     var id        = 0
 
     def getDelta(goodId: Int): Int = {
-      for (i <- 0 until goodsIds.size)
+      for (i <- goodsIds.indices)
         if (goodsIds(i) == goodId)
           return delta(i).output - delta(i).input
 
@@ -347,7 +342,7 @@ object MUCA extends Problem {
     }
 
     def getDeltaInput(goodId: Int): Int = {
-      for (i <- 0 until goodsIds.size)
+      for (i <- goodsIds.indices)
         if (goodsIds(i) == goodId)
           return delta(i).input
 
@@ -355,7 +350,7 @@ object MUCA extends Problem {
     }
 
     def getDeltaOutput(goodId: Int): Int = {
-      for (i <- 0 until goodsIds.size)
+      for (i <- goodsIds.indices)
         if (goodsIds(i) == goodId)
           return delta(i).output
 
@@ -364,7 +359,7 @@ object MUCA extends Problem {
 
     override def toString: String = {
       var st = "*** "
-      for (i <- 0 until goodsIds.size)
+      for (i <- goodsIds.indices)
         st += "id =" + goodsIds(i) + "(" + getDeltaInput(goodsIds(i)) + ", " + getDeltaOutput(goodsIds(i)) + ") "
       st
     }
@@ -509,15 +504,14 @@ object MUCA extends Problem {
       }
     }
     catch {
-      case ex: FileNotFoundException => {
+      case ex: FileNotFoundException =>
         Console.err.println("You need to run this program in a directory that contains the required file.")
         Console.err.println(ex)
         sys.exit(-1)
-      }
-      case ex: IOException => {
+
+      case ex: IOException =>
         Console.err.println(ex)
         sys.exit(-1)
-      }
     }
 
     //     println(this.maxCost);

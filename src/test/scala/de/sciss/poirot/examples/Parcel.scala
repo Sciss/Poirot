@@ -48,7 +48,7 @@ object Parcel extends App with Problem {
 
   // We have to check all steps of the trip to make
   // sure we satisfy load constraints.
-  for (i <- 0 until cities.length) {
+  for (i <- cities.indices) {
     // Variable nextTown denotes city which is visited in next move
     val nextTown = IntVar("nextTown[" + i + "]", 1, cities.length)
     // This constraint defines nextTown value
@@ -67,7 +67,7 @@ object Parcel extends App with Problem {
 
   // Constraints below make sure that at no city the load
   // constraint is violated. Load is always between [0..15].
-  for (i <- 0 until cities.length) {
+  for (i <- cities.indices) {
     val tripLoads   = List.tabulate(i)( j => loads(j))
     val partialLoad = IntVar("partialLoad[0-" + i + "]", 0, 15)
     partialLoad    #= sum(tripLoads)
