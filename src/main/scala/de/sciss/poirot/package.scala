@@ -426,7 +426,7 @@ package object poirot {
     model.impose(c)
   }
 
-  /** Wrapper for org.jacop.constraints.binpack.Binpack (?).
+  /** Wrapper for [[org.jacop.constraints.binpacking.Binpacking]].
     *
     * @param bins list containing which tuples of bins, their loads and their weights
     */
@@ -1145,7 +1145,7 @@ package object poirot {
 
   /** Defines null variable selection method that is interpreted by JaCoP as input order.
     *
-    * XXX TODO: ugly `null`; ought to use place holde value
+    * XXX TODO: ugly `null`; ought to use place holder value
     *
     * @return related variable selection method.
     */
