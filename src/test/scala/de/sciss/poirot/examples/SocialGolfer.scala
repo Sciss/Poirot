@@ -1,3 +1,18 @@
+/*
+ *  SocialGolfer.scala
+ *  (Poirot)
+ *
+ *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
+ *  Code is often based on or identical to the original JaCoP Scala wrappers by
+ *  Krzysztof Kuchcinski and Radoslaw Szymanek.
+ *
+ *  This software is published under the GNU Affero General Public License v3+
+ *
+ *
+ *  For further information, please contact Hanns Holger Rutz at
+ *  contact@sciss.de
+ */
+
 package de.sciss.poirot
 package examples
 
@@ -76,7 +91,7 @@ object SocialGolfer extends Problem {
 
     for (i <- 0 until weeks) {
       matching(golferGroup(i)(0), var1(i))
-      v(i) = weightedSum(var1(i), weights.toIndexedSeq)
+      v(i) = weightedSum(var1(i) zip weights.toIndexedSeq)
     }
 
     for (i <- 0 until weeks - 1)
@@ -84,7 +99,7 @@ object SocialGolfer extends Problem {
 
     val vars = golferGroup.flatten.toList
 
-    def printSolution(): Unit =
+    def printSolution = () =>
       for (i <- 0 until weeks) {
         for (j <- 0 until groups) {
           print(golferGroup(i)(j).dom() + " ")

@@ -1,3 +1,18 @@
+/*
+ *  Implicits.scala
+ *  (Poirot)
+ *
+ *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
+ *  Code is often based on or identical to the original JaCoP Scala wrappers by
+ *  Krzysztof Kuchcinski and Radoslaw Szymanek.
+ *
+ *  This software is published under the GNU Affero General Public License v3+
+ *
+ *
+ *  For further information, please contact Hanns Holger Rutz at
+ *  contact@sciss.de
+ */
+
 package de.sciss.poirot
 
 import de.sciss.poirot
@@ -10,13 +25,13 @@ import scala.language.implicitConversions
   * Used in overloaded operators.
   */
 object Implicits {
-  /** Converts integer to IntVar.
+  /** Converts an integer value to an `IntVar`.
     *
     * @param i integer to be converted.
     */
   implicit def intToJacopVar(i: Int)(implicit model: Model): IntVar = IntVar(i, i)
 
-  /** Converts integer to BoolVar.
+  /** Converts a boolean value to a `BooleanVar`.
    *
    * @param b boolean to be converted.
    */
@@ -25,6 +40,11 @@ object Implicits {
     new BooleanVar(i, i)
   }
 
+  /** Converts a double value to a `DoubleVar`.
+    *
+    * @param d double to be converted.
+    */
+  implicit def doubleToJacopVar(d: Double)(implicit model: Model): DoubleVar = DoubleVar(d, d)
 
   implicit class Reifier(val peer: PrimitiveConstraint) extends AnyVal {
     def #<-> (b: BooleanVar)(implicit model: Model): Constraint = {
@@ -36,8 +56,8 @@ object Implicits {
   }
 
   implicit class PoirotIntVarIterable(val peer: IIterable[IntVar]) extends AnyVal {
-    def allDifferent()(implicit model: Model): Unit = poirot.allDifferent(peer)
-    def allDistinct ()(implicit model: Model): Unit = poirot.allDistinct (peer)
+    def allDifferent()(implicit model: Model): Unit = poirot.allDifferent(peer.toSeq: _*)
+    def allDistinct ()(implicit model: Model): Unit = poirot.allDistinct (peer.toSeq: _*)
 
     // def sum(implicit model: Model): IntVar = poirot.sum(peer)
   }
@@ -48,5 +68,13 @@ object Implicits {
 
   implicit class PoirotIntSeq(val peer: ISeq[Int]) extends AnyVal {
     def apply(index: IntVar)(implicit model: Model): IntVar = poirot.intAt(index, peer)
+  }
+
+  implicit class PoirotBooleanVarSeq(val peer: ISeq[BooleanVar]) extends AnyVal {
+    def apply(index: IntVar)(implicit model: Model): BooleanVar = poirot.booleanVarAt(index, peer)
+  }
+
+  implicit class PoirotDoubleSeq(val peer: ISeq[Double]) extends AnyVal {
+    def apply(index: IntVar)(implicit model: Model): DoubleVar = poirot.doubleAt(index, peer)
   }
 }

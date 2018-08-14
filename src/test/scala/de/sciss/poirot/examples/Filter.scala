@@ -1,3 +1,18 @@
+/*
+ *  Filter.scala
+ *  (Poirot)
+ *
+ *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
+ *  Code is often based on or identical to the original JaCoP Scala wrappers by
+ *  Krzysztof Kuchcinski and Radoslaw Szymanek.
+ *
+ *  This software is published under the GNU Affero General Public License v3+
+ *
+ *
+ *  For further information, please contact Hanns Holger Rutz at
+ *  contact@sciss.de
+ */
+
 package de.sciss.poirot
 package examples
 
@@ -66,7 +81,7 @@ object Filter extends App with Problem {
 
   println(stats)
 
-  def printSol(): Unit = {
+  def printSol = () => {
     println("\nSolution with cost: " + end.value + "\n=======================")
     println(tr)
   }

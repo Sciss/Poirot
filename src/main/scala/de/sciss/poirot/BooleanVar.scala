@@ -1,3 +1,18 @@
+/*
+ *  BooleanVar.scala
+ *  (Poirot)
+ *
+ *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
+ *  Code is often based on or identical to the original JaCoP Scala wrappers by
+ *  Krzysztof Kuchcinski and Radoslaw Szymanek.
+ *
+ *  This software is published under the GNU Affero General Public License v3+
+ *
+ *
+ *  For further information, please contact Hanns Holger Rutz at
+ *  contact@sciss.de
+ */
+
 package de.sciss.poirot
 
 import org.jacop.constraints._
@@ -56,9 +71,9 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     model.n += 1
   }
 
-  /** Defines equation constraint between two BoolVar.
+  /** Defines an 'equation' constraint between two `BooleanVar` instances.
     *
-    * @param that a second parameter for equation constraint.
+    * @param that a second parameter for the 'equation' constraint.
     * @return the defined constraint.
     */
   def #= (that: BooleanVar /* IntVar */): PrimitiveConstraint = {
@@ -67,9 +82,9 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     c
   }
 
-  /** Defines equation constraint a BoolVar and a integer value.
+  /** Defines an 'equation' constraint between this variable and a `Boolean` value.
     *
-    * @param that a second parameter for equation constraint.
+    * @param that a second parameter for the 'equation' constraint.
     * @return the defined constraint.
     */
   def #= (that: Boolean /* Int */): PrimitiveConstraint = {
@@ -79,37 +94,35 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     c
   }
 
-  /** Defines logical and (conjunction) constraint between two BoolVar.
+  /** Defines a logical 'and' (conjunction) constraint between two `BooleanVar` instances.
     *
-    * @param that a second parameter for equation constraint.
+    * @param that a second parameter for the 'and' constraint.
     * @return the defined constraint.
     */
   def & (that: BooleanVar /* IntVar */): BooleanVar = {
     val result      = BooleanVar()
     val parameters  = Array[jc.IntVar](this, that)
     val c           = new AndBool(parameters, result)
-    c.imposeDecomposition(model)
-//    model.constr   += c
+    model.constr   += c.decompose(store).get(0)
     result
   }
 
-  /** Defines logical or (disjunction) constraint between two BoolVar.
+  /** Defines a logical 'or' (disjunction) constraint between two `BooleanVar` instances.
     *
-    * @param that a second parameter for equation constraint.
+    * @param that a second parameter for the 'or' constraint.
     * @return the defined constraint.
     */
   def | (that: BooleanVar /* IntVar */): BooleanVar = {
     val result      = BooleanVar()
     val parameters  = Array[jc.IntVar](this, that)
     val c           = new OrBool(parameters, result)
-    c.imposeDecomposition(model)
-//    model.constr   += c
+    model.constr   += c.decompose(store).get(0)
     result
   }
 
-  /** Defines logical exclusive or constraint between two BoolVar.
+  /** Defines a logical 'exclusive or' constraint between two `BooleanVar` instances.
     *
-    * @param that a second parameter for equation constraint.
+    * @param that a second parameter for the 'exclusive or' constraint.
     * @return the defined constraint.
     */
   def ^ (that: BooleanVar /* IntVar */): BooleanVar = {
@@ -120,9 +133,9 @@ class BooleanVar private[poirot](name: String, min: Int, max: Int)(implicit mode
     result
   }
 
-  /** Defines logical negation constraint for BoolVar.
+  /** Defines a logical 'negation' constraint for this variable.
     *
-    * @return boolean variable that is the result for this constraint.
+    * @return variable that is the result for this constraint.
     */
   def unary_~ : BooleanVar = {
     val result    = BooleanVar()

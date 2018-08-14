@@ -39,6 +39,7 @@ Please see the file [CONTRIBUTING.md](CONTRIBUTING.md)
 - Standard Scala style, e.g. argument names, camel case etc.; more consistent use of empty parens
 - Removing unnecessary things such as `ClassTag`s
 - Removing global state when possible
+- `BoolVar` is called `BooleanVar`, `FloatVar` is called `DoubleVar`.
 
 ## getting started
 

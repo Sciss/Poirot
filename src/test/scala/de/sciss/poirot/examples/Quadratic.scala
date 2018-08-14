@@ -1,5 +1,5 @@
 /*
- *  QueenGlobal.scala
+ *  Quadratic.scala
  *  (Poirot)
  *
  *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
@@ -16,21 +16,20 @@
 package de.sciss.poirot
 package examples
 
-import Implicits._
+import de.sciss.poirot.Implicits._
+import org.jacop.floats.core.FloatDomain
 
-object QueenGlobal extends App with Problem {
-  val n = 100
+object Quadratic extends App with Problem {
 
-  val q = Vec.tabulate(n)(i => IntVar("q" + i, 0, n))
-  q.allDifferent()
+  FloatDomain.setPrecision(1e-12)
 
-  val q1 = Vec.tabulate(n)(i => q(i) + i)
-  q1.allDifferent()
+  val x = DoubleVar("x", -10, 10)
+  val y = DoubleVar("y", -10, 10)
 
-  val q2 = Vec.tabulate(n)(i => q(i) - i)
-  q2.allDifferent()
-  
-  val success = satisfy(search(q.toList, firstFail, indomainMiddle))
+  // constraints
+  2.0*x*y + y #= 1.0
+  x*y #= 0.2
 
-  println(if (success) "Yes" else "No solution")
+  val (result, stats) = withStatistics(satisfyAll(searchDouble(List(x,y), inputOrder), () => println(x+"\n"+y)))
+  println(stats)
 }

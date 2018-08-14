@@ -1,3 +1,18 @@
+/*
+ *  package.scala
+ *  (Poirot)
+ *
+ *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
+ *  Code is often based on or identical to the original JaCoP Scala wrappers by
+ *  Krzysztof Kuchcinski and Radoslaw Szymanek.
+ *
+ *  This software is published under the GNU Affero General Public License v3+
+ *
+ *
+ *  For further information, please contact Hanns Holger Rutz at
+ *  contact@sciss.de
+ */
+
 package de.sciss
 
 import org.jacop.constraints.binpacking.Binpacking
@@ -5,11 +20,14 @@ import org.jacop.constraints.knapsack.Knapsack
 import org.jacop.constraints.netflow.NetworkFlow
 import org.jacop.constraints.regular.Regular
 import org.jacop.constraints.{netflow => jnet, _}
+import org.jacop.floats.constraints.{AbsPeqR, AcosPeqR, AsinPeqR, AtanPeqR, CosPeqR, ElementFloat, ExpPeqR, LinearFloat, LnPeqR, SinPeqR, SqrtPeqR, TanPeqR}
+import org.jacop.floats.search.SplitSelectFloat
 import org.jacop.search._
 import org.jacop.set.constraints.{CardA, CardAeqX, Match}
 import org.jacop.set.search._
 import org.jacop.set.{core => jset}
 import org.jacop.{core => jc}
+import org.jacop.floats.{core => jfc}
 
 import scala.collection.immutable.{Iterable => IIterable, Seq => ISeq}
 import scala.collection.{breakOut, mutable}
@@ -46,7 +64,7 @@ package object poirot {
     *
     * @param xs set of variables to be different.
     */
-  def allDifferent(xs: IIterable[IntVar])(implicit model: Model): Unit = {
+  def allDifferent(xs: IntVar*)(implicit model: Model): Unit = {
     val c = new Alldiff(xs.toArray[jc.IntVar])
     if (trace) println(c)
     model.impose(c)
@@ -56,42 +74,30 @@ package object poirot {
     *
     * @param xs set of variables to be different.
     */
-  def allDistinct(xs: IIterable[IntVar])(implicit model: Model): Unit = {
+  def allDistinct(xs: IntVar*)(implicit model: Model): Unit = {
     val c = new Alldistinct(xs.toArray[jc.IntVar])
     if (trace) println(c)
     model.impose(c)
   }
 
-  /** Wrapper for [[org.jacop.constraints.GCC]].
+  /** Wrapper for [[org.jacop.constraints.GCC]] (global cardinality constraint).
     *
     * @param xs array of tuples of variables and their counters
     */
-  def gcc(xs: (IntVar, IntVar)*)(implicit model: Model): Unit = {
+  def gcc(xs: IIterable[(IntVar, IntVar)])(implicit model: Model): Unit = {
     val (vars, counters) = xs.unzip
     val c = new GCC(vars.toArray[jc.IntVar], counters.toArray[jc.IntVar])
     if (trace) println(c)
     model.impose(c)
   }
 
-  //  /** Wrapper for [[org.jacop.constraints.Sum]].
-  //    *
-  //    * @param xs array of variables to be summed up.
-  //    * @param result summation result.
-  //    */
-  //  def assignSum(xs: IIterable[IntVar], result: IntVar)(implicit model: Model): Unit = {
-  //    val c = new Sum(xs.toArray[jc.IntVar], result)
-  //    if (trace) println(c)
-  //    model.impose(c)
-  //  }
+//  /** First stage for producing [[org.jacop.constraints.SumInt]].
+//    */
+//  def sum(res: IIterable[IntVar]): poirot.SumInt = new poirot.SumInt(res)
 
-  /** Wrapper for [[org.jacop.constraints.Sum]].
-    *
-    * @param xs variables to be summed up.
-    * @return summation result.
-    */
-  def sum(xs: IIterable[IntVar])(implicit model: Model): IntVar = {
-    val result    = IntVar()
-    val c         = new Sum(xs.toArray[jc.IntVar], result)
+  def sum(res: IIterable[IntVar])(implicit model: Model): IntVar = {
+    val result = IntVar()
+    val c = new SumInt(res.toArray[jc.IntVar], "==", result)
     model.constr += c
     result
   }
@@ -110,12 +116,12 @@ package object poirot {
 
   /** Wrapper for [[org.jacop.constraints.SumWeight]].
     *
-    * @param vars     variables to sum
-    * @param weights  weights for the variables
+    * @param tup      tuples of variables to sum and their weights
     * @return         summation result.
     */
-  def weightedSum(vars: ISeq[IntVar], weights: ISeq[Int])(implicit model: Model): IntVar = {
+  def weightedSum(tup: IIterable[(IntVar, Int)])(implicit model: Model): IntVar = {
     val result          = IntVar()
+    val (vars, weights) = tup.unzip
     val c               = new SumWeight(vars.toArray[jc.IntVar], weights.toArray[Int], result)
     if (trace) println(c)
     model.impose(c)
@@ -220,7 +226,7 @@ package object poirot {
     * @param xs variables to count number of different values.
     * @return number of different values.
     */
-  def numDistinct(xs: IntVar*)(implicit model: Model): IntVar = {
+  def numDistinct(xs: IIterable[IntVar])(implicit model: Model): IntVar = {
     val result    = IntVar()
     val c         = new Values(xs.toArray[jc.IntVar], result)
     model.constr += c
@@ -277,6 +283,22 @@ package object poirot {
   def intVarAt(index: IntVar, xs: ISeq[IntVar], offset: Int = 0)(implicit model: Model): IntVar = {
     val result  = IntVar()
     val c       = new Element(index, xs.toArray[jc.IntVar], result, offset)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  def booleanVarAt(index: IntVar, xs: ISeq[IntVar], offset: Int = 0)(implicit model: Model): BooleanVar = {
+    val result  = BooleanVar()
+    val c       = Element.choose(index, xs.toArray[jc.IntVar], result, offset)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  def doubleAt(index: IntVar, xs: ISeq[Double], offset: Int = 0)(implicit model: Model): DoubleVar = {
+    val result  = DoubleVar()
+    val c       = new ElementFloat(index, xs.toArray, result, offset)
     if (trace) println(c)
     model.impose(c)
     result
@@ -592,6 +614,199 @@ package object poirot {
     model.impose(c)
   }
 
+
+  // =============== Floating point constraints ===================
+
+  /** Wrapper for [[org.jacop.floats.constraints.AbsPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return absolute value of the variable.
+    */
+  def abs(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new AbsPeqR(a, result)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.ExpPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of exponential function the variable.
+    */
+  def exp(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new ExpPeqR(a, result)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.LnPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of natural logarithm function the variable.
+    */
+  def ln(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new LnPeqR(a, result)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.SqrtPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of square root function the variable.
+    */
+  def sqrt(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new SqrtPeqR(a, result)
+    if (trace) println(c)
+    model.impose( c )
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.SinPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of sinus function the variable.
+    */
+  def sin(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new SinPeqR(a, result)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.AsinPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of arc-sine function the variable.
+    */
+  def asin(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new AsinPeqR(a, result)
+    if (trace) println(c)
+    model.impose( c )
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.CosPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of cosine function the variable.
+    */
+  def cos(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new CosPeqR(a, result)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.AcosPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of arc-cosine function the variable.
+    */
+  def acos(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new AcosPeqR(a, result)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.TanPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of tangent function the variable.
+    */
+  def tan(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new TanPeqR(a, result)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.AtanPeqR]].
+    *
+    * @param a a `DoubleVar` variable.
+    * @return value of arc-tangent function the variable.
+    */
+  def atan(a: DoubleVar)(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val c = new AtanPeqR(a, result)
+    if (trace) println(c)
+    model.impose(c)
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.LinearFloat]].
+    *
+    * @param res array of variables to be summed up. 
+    * @return summation result. 
+    */
+  def sum(res: IIterable[DoubleVar])(implicit model: Model): DoubleVar = {
+    val result  = DoubleVar()
+    val vecB    = Array.newBuilder[jfc.FloatVar]
+    res.foreach { in =>
+      vecB += in
+    }
+    vecB += result
+    val vec = vecB.result()
+    val w = Array.fill(vec.length)(1.0)
+    w(w.length - 1) = -1.0
+
+    val c = new LinearFloat(vec, w, "==", 0.0)
+    if (trace) println(c)
+    model.constr += c
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.LinearFloat]].
+    *
+    * @param res array of variables to be summed up. 
+    * @return summation result. 
+    */
+  def weightedSum(res: IIterable[DoubleVar], weight: IIterable[Double])(implicit model: Model): DoubleVar = {
+    val result = DoubleVar()
+    val vecB    = Array.newBuilder[jfc.FloatVar]
+    res.foreach { in =>
+      vecB += in
+    }
+    vecB += result
+    val vec = vecB.result()
+    val wB = Array.newBuilder[Double]
+    weight.foreach { in =>
+      wB += in
+    }
+    wB += -1.0
+    val w = wB.result()
+    val c = new LinearFloat(vec, w, "==", 0.0)
+    if (trace) println(c)
+    model.constr += c
+    result
+  }
+
+  /** Wrapper for [[org.jacop.floats.constraints.LinearFloat]].
+    *
+    * @param res array of variables to be summed up. 
+    * @return summation result. 
+    */
+  def linear(res: IIterable[DoubleVar], weight: IIterable[Double], result: Double)(implicit model: Model): Unit = {
+    val resA  = res.toArray[jfc.FloatVar]
+    val wA    = weight.toArray
+    val c     = new LinearFloat(resA, wA, "==", result)
+    if (trace) println(c)
+    model.constr += c
+  }
+
   // =============== Search methods ===================
 
   /** Minimization search method.
@@ -601,8 +816,21 @@ package object poirot {
     * @return true if solution found and false otherwise.
     */
   def minimize[A <: jc.Var](select: SelectChoicePoint[A], cost: IntVar, printSolutions: (() => Unit)*)
-                                   (implicit m: ClassTag[A], model: Model): Boolean = {
+                                   (implicit m: ClassTag[A], model: Model): Boolean =
+    minimizeImpl(select, cost, printSolutions)
 
+  /** Minimization search method.
+    *
+    * @param select select method defining variable selection and value assignment methods.
+    * @param cost Cost variable
+    * @return true if solution found and false otherwise.
+    */
+  def minimize[A <: jc.Var](select: SelectChoicePoint[A], cost: DoubleVar, printSolutions: (() => Unit)*)
+                           (implicit m: ClassTag[A], model: Model): Boolean =
+    minimizeImpl(select, cost, printSolutions)
+
+  private def minimizeImpl[A <: jc.Var](select: SelectChoicePoint[A], cost: jc.Var, printSolutions: Seq[() => Unit])
+                                       (implicit m: ClassTag[A], model: Model): Boolean = {
     model.imposeAllConstraints()
 
     val label = dfs[A](all = false)
@@ -613,6 +841,8 @@ package object poirot {
       label.setPrintInfo(false)
       label.setSolutionListener(new ScalaSolutionListener[A](printSolutions))
     }
+
+    if (timeOut > 0) label.setTimeOut(timeOut)
 
     if (maxNumSolutions > 0) {
       label.getSolutionListener.setSolutionLimit(maxNumSolutions)
@@ -631,10 +861,21 @@ package object poirot {
     */
   def maximize[A <: jc.Var](select: SelectChoicePoint[A], cost: IntVar,
                                     printSolutions: (() => Unit)*)(implicit m: ClassTag[A], model: Model): Boolean = {
-
-    val costN  = IntVar("newCost", jc.IntDomain.MinInt, jc.IntDomain.MaxInt)
+    val costN  = IntVar("newCost")
     costN     #= -cost
+    minimize(select, costN, printSolutions: _*)
+  }
 
+  /** Maximization search method.
+    *
+    * @param select select method defining variable selection and value assignment methods.
+    * @param cost Cost variable
+    * @return true if solution found and false otherwise.
+    */
+  def maximize[A <: jc.Var](select: SelectChoicePoint[A], cost: DoubleVar,
+                            printSolutions: (() => Unit)*)(implicit m: ClassTag[A], model: Model): Boolean = {
+    val costN  = DoubleVar("newCost")
+    costN     #= -cost
     minimize(select, costN, printSolutions: _*)
   }
 
@@ -855,6 +1096,15 @@ package object poirot {
   def searchSplit[A <: jc.IntVar](vars: IIterable[A], heuristic: ComparatorVariable[A])
                                  (implicit m: ClassTag[A]): SelectChoicePoint[A] =
     new SplitSelect[A](vars.toArray, heuristic, new IndomainMiddle[A]())
+
+  /** Defines list of variables, their selection method for split search and value selection
+    *
+    * @return select method for search.
+    */
+  def searchDouble[T <: jfc.FloatVar](vars: IIterable[T], heuristic: ComparatorVariable[T])
+                                     (implicit model: Model, m: ClassTag[T]): SelectChoicePoint[T] = {
+    new SplitSelectFloat[T](model, vars.toArray, heuristic)
+  }
 
   def withStatistics[Z](block: => Z): (Z, Stats) = {
     val old = addLabelFun.get()

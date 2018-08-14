@@ -1,6 +1,22 @@
+/*
+ *  IntVar.scala
+ *  (Poirot)
+ *
+ *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
+ *  Code is often based on or identical to the original JaCoP Scala wrappers by
+ *  Krzysztof Kuchcinski and Radoslaw Szymanek.
+ *
+ *  This software is published under the GNU Affero General Public License v3+
+ *
+ *
+ *  For further information, please contact Hanns Holger Rutz at
+ *  contact@sciss.de
+ */
+
 package de.sciss.poirot
 
 import org.jacop.constraints._
+import org.jacop.core.IntDomain
 import org.jacop.set.constraints.{EinA, XinA}
 import org.jacop.{core => jc}
 
@@ -67,73 +83,83 @@ object IntVar {
 class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
   extends jc.IntVar(model, name, min, max) {
 
-  /** Defines add constraint between two IntVar.
+  private def safeNeg(in: Int): Int =
+    if (in == Int.MinValue) Int.MaxValue else -in
+
+  /** Defines an 'add' constraint between two `IntVar` instances.
     *
     * @param that a second parameter for the addition constraint.
     * @return IntVar variable being the result of the addition constraint.
     */
   def + (that: IntVar): IntVar = {
-    val result    = IntVar()
+    import IntDomain.addInt
+    val result    = IntVar(addInt(this.min(), that.min()), addInt(this.max(), that.max()))
     val c         = new XplusYeqZ(this, that, result)
     model.constr += c
     result
   }
 
-  /** Defines add constraint between IntVar and an integer value.
+  /** Defines an 'add' constraint between this `IntVar` and an integer value.
     *
     * @param that a second integer parameter for the addition constraint.
     * @return IntVar variable being the result of the addition constraint.
     */
   def + (that: Int): IntVar = {
-    val result    = IntVar()
+    import IntDomain.addInt
+    val result    = IntVar(addInt(this.min(), that), addInt(this.max(), that))
     val c         = new XplusCeqZ(this, that, result)
     model.constr += c
     result
   }
 
-  /** Defines subtract constraint between two IntVar.
+  /** Defines a 'subtract' constraint between two `IntVar` instances.
     *
     * @param that a second parameter for the subtraction constraint.
     * @return IntVar variable being the result of the subtraction constraint.
     */
   def - (that: IntVar): IntVar = {
-    val result    = IntVar()
+    import IntDomain.subtractInt
+    val result    = IntVar(subtractInt(this.min(), that.max()),
+                           subtractInt(this.max(), that.min()))
     val c         = new XplusYeqZ(result, that, this)
     model.constr += c
     result
   }
 
-  /** Defines subtract constraint between IntVar and an integer value.
+  /** Defines a 'subtract' constraint between this variable and an integer value.
     *
-    * @param that a second integer parameter for the subtraction constraint.
-    * @return IntVar variable being the result of the subtraction constraint.
+    * @param that a second integer parameter for the 'subtract' constraint.
+    * @return variable being the result of the constraint.
     */
   def - (that: Int): IntVar = {
-    val result    = IntVar()
+    import IntDomain.subtractInt
+    val result    = IntVar(subtractInt(this.min(), that), subtractInt(this.max(), that))
     val c         = new XplusCeqZ(result, that, this)
     model.constr += c
     result
   }
 
-  /** Defines multiplication constraint between two IntVar.
+  /** Defines a 'multiplication' constraint between two `IntVar` instances.
     *
-    * @param that a second parameter for the multiplication constraint.
-    * @return IntVar variable being the result of the multiplication constraint.
+    * @param that a second parameter for the 'multiplication' constraint.
+    * @return variable being the result of the constraint.
     */
   def * (that: IntVar): IntVar = {
-    val result    = IntVar()
+    val bounds    = IntDomain.mulBounds(this.min(), this.max(), that.min(), that.max())
+    val result    = IntVar(bounds.min, bounds.max)
     val c         = new XmulYeqZ(this, that, result)
     model.constr += c
     result
   }
 
-  /** Defines multiplication constraint between IntVar and an integer value.
+  /** Defines a 'multiplication' constraint between this variable and an integer value.
     *
-    * @param that a second integer parameter for the multiplication constraint.
-    * @return IntVar variable being the result of the multiplication constraint.
+    * @param that a second integer parameter for the 'multiplication' constraint.
+    * @return variable being the result of the constraint.
     */
   def * (that: Int): IntVar = {
-    val result    = IntVar()
+    val bounds    = IntDomain.mulBounds(this.min(), this.max(), that, that)
+    val result    = IntVar(bounds.min, bounds.max)
     val c         = new XmulCeqZ(this, that, result)
     model.constr += c
     result
@@ -145,28 +171,40 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     * @return IntVar variable being the result of the integer division constraint.
     */
   def / (that: IntVar): IntVar = {
-    val result    = IntVar()
+    val bounds    = IntDomain.divBounds(this.min(), this.max(), that.min(), that.max())
+    val result    = IntVar(bounds.min, bounds.max)
     val c         = new XdivYeqZ(this, that, result)
     model.constr += c
     result
   }
 
-  /** Defines constraint for integer reminder from division between two IntVar.
+  /** Defines a constraint for integer reminder from division between two `IntVar` instances.
     *
-    * @param that a second parameter for integer reminder from division constraint.
-    * @return IntVar variable being the result of the integer reminder from division constraint.
+    * @param that a second parameter for constraint.
+    * @return variable being the result of the constraint.
     */
   def % (that: IntVar): IntVar = {
-    val result    = IntVar()
+    import math.{min => mmin, max => mmax, abs => mabs}
+    
+    val (remMin, remMax) = if (this.min() >= 0) {
+      (0,  mmax(mabs(that.min()), mabs(that.max())) - 1)
+    } else if (this.max() < 0) {
+      (0, -mmax(mabs(that.min()), mabs(that.max())) + 1)
+    } else {
+      (mmin(mmin(that.min(),-that.min()), mmin(that.max(),-that.max())) + 1,
+       mmax(mmax(that.min(),-that.min()), mmax(that.max(),-that.max())) - 1)
+    }
+
+    val result    = IntVar(remMin, remMax)
     val c         = new XmodYeqZ(this, that, result)
     model.constr += c
     result
   }
 
-  /** Defines exponentiation constraint between two IntVar.
+  /** Defines an 'exponentiation' constraint between two `IntVar` instances.
     *
-    * @param that exponent for the exponentiation constraint.
-    * @return IntVar variable being the result of the exponentiation constraint.
+    * @param that exponent for the 'exponentiation' constraint.
+    * @return variable being the result of the constraint.
     */
   def pow(that: IntVar): IntVar = {
     val result    = IntVar()
@@ -175,20 +213,20 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     result
   }
 
-  /** Defines unary "-" constraint for IntVar.
+  /** Defines an unary "-" constraint for this variable.
     *
     * @return the defined constraint.
     */
   def unary_- : IntVar = {
-    val result    = IntVar()
+    val result    = IntVar(safeNeg(this.max()), safeNeg(this.min()))
     val c         = new XplusYeqC(this, result, 0)
     model.constr += c
     result
   }
 
-  /** Defines equation constraint between two IntVar.
+  /** Defines an 'equation' constraint between two `IntVar` instances.
     *
-    * @param that a second parameter for equation constraint.
+    * @param that a second parameter for 'equation' constraint.
     * @return the defined constraint.
     */
   def #= (that: IntVar): PrimitiveConstraint = {
@@ -197,9 +235,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines equation constraint between IntVar and a integer constant.
+  /** Defines an 'equation' constraint between this variable and an integer constant.
     *
-    * @param that a second parameter for equation constraint.
+    * @param that a second parameter for the 'equation' constraint.
     * @return the defined constraint.
     */
   def #= (that: Int): PrimitiveConstraint = {
@@ -208,9 +246,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines inequality constraint between two IntVar.
+  /** Defines an 'inequality' constraint between two `IntVar` instances.
     *
-    * @param that a second parameter for inequality constraint.
+    * @param that a second parameter for the 'inequality' constraint.
     * @return the defined constraint.
     */
   def #!= (that: IntVar): PrimitiveConstraint = {
@@ -219,9 +257,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines inequality constraint between IntVar and integer constant.
+  /** Defines an 'inequality' constraint between this variable and an integer constant.
     *
-    * @param that a second parameter for inequality constraint.
+    * @param that a second parameter for the 'inequality' constraint.
     * @return the defined constraint.
     */
   def #!= (that: Int): PrimitiveConstraint = {
@@ -230,9 +268,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines "less than" constraint between two IntVar.
+  /** Defines a 'less than' constraint between two `IntVar` instances.
     *
-    * @param that a second parameter for "less than" constraint.
+    * @param that a second parameter for the 'less than' constraint.
     * @return the defined constraint.
     */
   def #< (that: IntVar): PrimitiveConstraint = {
@@ -241,9 +279,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines "less than" constraint between IntVar and integer constant.
+  /** Defines a 'less than' constraint between this variable and an integer constant.
     *
-    * @param that a second parameter for "less than" constraint.
+    * @param that a second parameter for the 'less than' constraint.
     * @return the equation constraint.
     */
   def #< (that: Int): PrimitiveConstraint = {
@@ -252,7 +290,7 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines "less than or equal" constraint between two IntVar.
+  /** Defines a 'less than or equal' constraint between two `IntVar` instances.
     *
     * @param that a second parameter for "less than or equal" constraint.
     * @return the defined constraint.
@@ -263,9 +301,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines "less than or equal" constraint between IntVar and integer constant.
+  /** Defines a 'less than or equal' constraint between this variable and an integer constant.
     *
-    * @param that a second parameter for "less than or equal" constraint.
+    * @param that a second parameter for the 'less than or equal' constraint.
     * @return the equation constraint.
     */
   def #<= (that: Int): PrimitiveConstraint = {
@@ -274,9 +312,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines "greater than" constraint between two IntVar.
+  /** Defines a 'greater than' constraint between two `IntVar` instances.
     *
-    * @param that a second parameter for "greater than" constraint.
+    * @param that a second parameter for the 'greater than' constraint.
     * @return the defined constraint.
     */
   def #> (that: IntVar): PrimitiveConstraint = {
@@ -285,9 +323,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines "greater than" constraint between IntVar and integer constant.
+  /** Defines a 'greater than' constraint between this variable and an integer constant.
     *
-    * @param that a second parameter for "greater than" constraint.
+    * @param that a second parameter for the 'greater than' constraint.
     * @return the equation constraint.
     */
   def #> (that: Int): PrimitiveConstraint = {
@@ -296,9 +334,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines "greater than or equal" constraint between two IntVar.
+  /** Defines a 'greater than or equal' constraint between two `IntVar` instances.
     *
-    * @param that a second parameter for "greater than or equal" constraint.
+    * @param that a second parameter for the 'greater than or equal' constraint.
     * @return the defined constraint.
     */
   def #>= (that: IntVar): PrimitiveConstraint = {
@@ -307,9 +345,9 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines "greater than or equal" constraint between IntVar and integer constant.
+  /** Defines a 'greater than or equal' constraint between this variable and an integer constant.
     *
-    * @param that a second parameter for "greater than or equal" constraint.
+    * @param that a second parameter for the 'greater than or equal' constraint.
     * @return the equation constraint.
     */
   def #>= (that: Int): PrimitiveConstraint = {
@@ -318,10 +356,10 @@ class IntVar protected (name: String, min: Int, max: Int)(implicit model: Model)
     c
   }
 
-  /** Defines constraint on inclusion of a IntVar variable value in a set.
+  /** Defines a constraint on inclusion of an `IntVar` variable value in a set.
     *
-    * @param that set that this variable's value must be included.
-    * @return the equation constraint.
+    * @param that set that this variable's value must be included in.
+    * @return the defined constraint.
     */
   def in(that: SetVar): PrimitiveConstraint = {
     val c = if (min == max)
