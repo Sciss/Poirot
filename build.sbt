@@ -1,5 +1,5 @@
 name         := "Poirot"
-version      := "0.3.0-SNAPSHOT"
+version      := "0.3.0"
 organization := "de.sciss"
 scalaVersion := "2.12.6"
 crossScalaVersions := Seq("2.12.6", "2.11.12")
@@ -8,7 +8,7 @@ homepage     := Some(url("https://github.com/Sciss/" + name.value))
 licenses     := Seq("AGPL v3" -> url("http://www.gnu.org/licenses/agpl-3.0.txt"))
 
 libraryDependencies ++= Seq(
-  "de.sciss" % "jacop" % "3.5.0-SNAPSHOT"
+  "de.sciss" % "jacop" % "3.5.0"
 )
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture")
