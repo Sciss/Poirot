@@ -2,7 +2,7 @@
  *  IndomainRandom.scala
  *  (Poirot)
  *
- *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
+ *  Copyright (c) 2013-2020 Hanns Holger Rutz. All rights reserved.
  *  Code is often based on or identical to the original JaCoP Scala wrappers by
  *  Krzysztof Kuchcinski and Radoslaw Szymanek.
  *

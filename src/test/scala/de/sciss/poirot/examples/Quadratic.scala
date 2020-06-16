@@ -30,6 +30,6 @@ object Quadratic extends App with Problem {
   2.0*x*y + y #= 1.0
   x*y #= 0.2
 
-  val (result, stats) = withStatistics(satisfyAll(searchDouble(List(x,y), inputOrder), () => println(x+"\n"+y)))
+  val (result, stats) = withStatistics(satisfyAll(searchDouble(List(x,y), inputOrder), () => println(s"$x\n$y")))
   println(stats)
 }

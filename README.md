@@ -7,11 +7,11 @@
 
 Poirot is a Scala front-end for the [JaCoP](https://github.com/Sciss/jacop) constraints solver library. It was
 originally based on the Scala DSL included with JaCoP, written and (C)opyright by Krzysztof Kuchcinski and
-Radoslaw Szymanek. All modifications and new interface (C)opyright 2013&ndash;2018 by Hanns Holger Rutz. All rights reserved.
+Radoslaw Szymanek. All modifications and new interface (C)opyright 2013&ndash;2020 by Hanns Holger Rutz. All rights reserved.
 
 Poirot is released under the [GNU Affero General Public License](http://github.com/Sciss/Poirot/blob/master/LICENSE)
 and comes with absolutely no warranties. Please see the [JaCoP](http://jacop.osolpro.com/index.php?option=com_content&view=article&id=5&Itemid=2)
-website for supplementary AGPL terms. To contact the author, send an email to `contact at sciss.de`
+website for supplementary AGPL terms. To contact the author, send an e-mail to `contact at sciss.de`
 
 ## linking
 
@@ -19,11 +19,11 @@ To use this project as a library, use the following artifact:
 
     "de.sciss" %% "poirot" % v
 
-The current version `v` is `0.3.0`
+The current version `v` is `0.3.1`
 
 ## building
 
-This project currently builds with sbt against Scala 2.12 and 2.11. It requires the JaCoP 3.5.0 artifact published under
+This project currently builds with sbt against Scala 2.13 and 2.12. It requires the JaCoP 3.5.0 artifact published under
 the `de.sciss` group ID. It should be automatically retrieved from Maven Central.
 
 To compile, use `sbt compile`, for the API docs `sbt doc`, to jump into a REPL `sbt console`.

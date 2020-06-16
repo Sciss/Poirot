@@ -64,5 +64,5 @@ object Transistors extends App with Problem {
 
   val result = satisfyAll(search(List(a, b, c, sum, carry), inputOrder, indomainMin))
 
-  println(a + " " + b + " " + " " + c + " " + " " + sum + " " + " " + carry)
+  println(s"$a, $b, $c, $sum, $carry")
 }

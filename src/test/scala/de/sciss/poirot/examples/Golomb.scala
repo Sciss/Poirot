@@ -50,9 +50,9 @@ object Golomb extends App with Problem {
   if (result) {
     print("Golomb ruler : ")
 
-    for (i <- 0 until m) print(mark(i).dom + " ")
+    for (i <- 0 until m) print(s"${mark(i).dom} ")
 
-    println("\n\n*** Execution time = " + (end - start) + " ms")
+    println(s"\n\n*** Execution time = ${end - start} ms")
 
   } else {
     println("No solution")

@@ -2,7 +2,7 @@
  *  package.scala
  *  (Poirot)
  *
- *  Copyright (c) 2013-2018 Hanns Holger Rutz. All rights reserved.
+ *  Copyright (c) 2013-2020 Hanns Holger Rutz. All rights reserved.
  *  Code is often based on or identical to the original JaCoP Scala wrappers by
  *  Krzysztof Kuchcinski and Radoslaw Szymanek.
  *
@@ -22,15 +22,15 @@ import org.jacop.constraints.regular.Regular
 import org.jacop.constraints.{netflow => jnet, _}
 import org.jacop.floats.constraints.{AbsPeqR, AcosPeqR, AsinPeqR, AtanPeqR, CosPeqR, ElementFloat, ExpPeqR, LinearFloat, LnPeqR, SinPeqR, SqrtPeqR, TanPeqR}
 import org.jacop.floats.search.SplitSelectFloat
-import org.jacop.search._
+import org.jacop.floats.{core => jfc}
+import org.jacop.search.{IndomainRandom => _, _}
 import org.jacop.set.constraints.{CardA, CardAeqX, Match}
 import org.jacop.set.search._
 import org.jacop.set.{core => jset}
 import org.jacop.{core => jc}
-import org.jacop.floats.{core => jfc}
 
 import scala.collection.immutable.{Iterable => IIterable, Seq => ISeq}
-import scala.collection.{breakOut, mutable}
+import scala.collection.mutable
 import scala.reflect.ClassTag
 
 /** Package for defining variables, constraints, global constraints and search
@@ -325,7 +325,7 @@ package object poirot {
     * @param rectangles sequence of four element vectors representing rectangles [x, y, lx, ly]
     */
   def diff2(rectangles: Vec[Vec[IntVar]])(implicit model: Model): Unit = {
-    val arr: Array[Array[jc.IntVar]] = rectangles.map(_.toArray[jc.IntVar])(breakOut)
+    val arr: Array[Array[jc.IntVar]] = rectangles.iterator.map(_.toArray[jc.IntVar]).toArray
     val c = new Diff(arr)
     if (trace) println(c)
     model.impose(c) // new Diff(rectangles.asInstanceOf[Array[Array[jc.IntVar]]]))
@@ -403,7 +403,7 @@ package object poirot {
     */
   def table(list: IIterable[(IntVar, IIterable[Int])])(implicit model: Model): Unit = {
     val (xs, tup) = list.unzip
-    val arr: Array[Array[Int]] = tup.map(_.toArray)(breakOut)
+    val arr: Array[Array[Int]] = tup.iterator.map(_.toArray).toArray
     val c = new ExtensionalSupportVA(xs.toArray[jc.IntVar], arr)
     if (trace) println(c)
     model.impose(c)
@@ -933,17 +933,17 @@ package object poirot {
 
     model.imposeAllConstraints()
 
-    val masterLabel = dfs[A](all = false)
+    val mainLabel = dfs[A](all = false)
 
     if (printSolutions.nonEmpty) {
-      // masterLabel.setSolutionListener(new EmptyListener[A])
-      masterLabel.setPrintInfo(false)
+      // mainLabel.setSolutionListener(new EmptyListener[A])
+      mainLabel.setPrintInfo(false)
     }
 
-    if (maxNumSolutions > 0) masterLabel.respectSolutionListenerAdvice = true
-    if (timeOut         > 0) masterLabel.setTimeOut(timeOut)
+    if (maxNumSolutions > 0) mainLabel.respectSolutionListenerAdvice = true
+    if (timeOut         > 0) mainLabel.setTimeOut(timeOut)
 
-    val lastLabel = (masterLabel /: select) { (previousSearch, sel) =>
+    val lastLabel = select.foldLeft(mainLabel) { (previousSearch, sel) =>
       val label = dfs[A](all = false)
       previousSearch.addChildSearch(label)
       label.setSelectChoicePoint(sel)
@@ -969,7 +969,7 @@ package object poirot {
       }
     }
 
-    masterLabel.labeling(model, select.head, cost)
+    mainLabel.labeling(model, select.head, cost)
   }
 
   /** Maximization method for sequence of search methods (specified by list of select methods).
@@ -1002,19 +1002,19 @@ package object poirot {
                                                  (implicit m: ClassTag[A], model: Model): Boolean = {
     model.imposeAllConstraints()
 
-    val masterLabel = dfs[A](all = all)
+    val mainLabel = dfs[A](all = all)
 
     if (printSolutions.nonEmpty) {
-      // masterLabel.setSolutionListener(new EmptyListener[A])
-      masterLabel.setPrintInfo(false)
+      // mainLabel.setSolutionListener(new EmptyListener[A])
+      mainLabel.setPrintInfo(false)
     }
 
-    if (timeOut > 0 ) masterLabel.setTimeOut(timeOut)
-    if (all)          masterLabel.getSolutionListener.searchAll(true)
+    if (timeOut > 0 ) mainLabel.setTimeOut(timeOut)
+    if (all)          mainLabel.getSolutionListener.searchAll(true)
 
-    masterLabel.getSolutionListener.recordSolutions(recordSolutions)
+    mainLabel.getSolutionListener.recordSolutions(recordSolutions)
 
-    val lastLabel = (masterLabel /: select) { (previousSearch, sel) =>
+    val lastLabel = select.foldLeft(mainLabel) { (previousSearch, sel) =>
       val label = dfs[A](all = all)
       previousSearch.addChildSearch(label)
       label.setSelectChoicePoint(sel)
@@ -1043,7 +1043,7 @@ package object poirot {
 
     lastLabel.getSolutionListener.recordSolutions(recordSolutions)
 
-    masterLabel.labeling(model, select.head)
+    mainLabel.labeling(model, select.head)
   }
 
   /** Search method for finding all solutions using a sequence of search methods (specified by list of select methods).
@@ -1084,7 +1084,7 @@ package object poirot {
     */
   def searchVector[A <: jc.Var](vars: Vec[Vec[A]], heuristic: ComparatorVariable[A],
                                         indom: Indomain[A])(implicit m: ClassTag[A]): SelectChoicePoint[A] = {
-    val varsArray: Array[Array[A]] = vars.map(_.toArray)(breakOut)
+    val varsArray: Array[Array[A]] = vars.iterator.map(_.toArray).toArray
 
     new SimpleMatrixSelect[A](varsArray, heuristic, indom)
   }

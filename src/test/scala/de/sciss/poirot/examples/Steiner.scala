@@ -36,7 +36,7 @@ object Steiner extends App with Problem {
   val result = satisfy(search(sets, inputOrder, indomainMinSet))
 
   if (result) {
-    sets.foreach(si => print(si.dom + " "))
+    sets.foreach(si => print(s"${si.dom} "))
     println() 
   }
   else println("No solution")

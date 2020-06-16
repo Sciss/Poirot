@@ -19,7 +19,7 @@ package examples
 import java.io.{BufferedReader, FileNotFoundException, FileReader, IOException}
 import java.util.StringTokenizer
 
-import scala.collection.{breakOut, mutable}
+import scala.collection.mutable
 
 /** Solves the Mixed Multi-Unit Combinatorial Auctions.
   *
@@ -187,7 +187,7 @@ object MUCA extends Problem {
     bidCosts = List[IntVar]()
 
     for (bid <- bids) {
-      val tuplesTail: Vec[(IntVar, Vec[Int])] = bid.zipWithIndex.map { case (bidXor, i) =>
+      val tuplesTail: Vec[(IntVar, Vec[Int])] = bid.iterator.zipWithIndex.map { case (bidXor, i) =>
         var kSet = IntSet()
 
         var xorUsedTransformation = Vec.empty[IntVar]
@@ -216,7 +216,7 @@ object MUCA extends Problem {
         among(transitions, kSet, n)
         
         (n, tup)
-      } (breakOut)
+      } .toIndexedSeq
 
       val bidCost = IntVar("bidCost" + (bidCosts.length + 1), minCost, maxCost)
       
@@ -302,9 +302,9 @@ object MUCA extends Problem {
     searchSpecial()
   }
 
-  /** Executes special master-slave search. The master search
+  /** Executes special primary-secondary search. The primary search
     * uses costs variables and maxregret criteria to choose an
-    * interesting bids. The second search (slave) looks for the
+    * interesting bids. The secondary search looks for the
     * sequence of chosen transactions such as that all constraints
     * concerning goods quantity (deltas of transitions) are respected.
     *
@@ -319,15 +319,15 @@ object MUCA extends Problem {
 
     print("\t")
 
-    for (i <- 0 until maxNoTransformations if transitions(i).value() != 0 ) print(transitions(i) + "\t")
+    for (i <- 0 until maxNoTransformations if transitions(i).value() != 0 ) print(s"${transitions(i)}\t")
     println()
 
     for (g <- 0 until noGoods) {
-      print(initialQuantity(g) + "\t")
+      print(s"${initialQuantity(g)}\t")
       for (i <- 0 until maxNoTransformations if transitions(i).value() != 0)
-        print(deltasI(i)(g).value() + "," + deltasO(i)(g).value() + "\t")
+        print(s"${deltasI(i)(g).value()},${deltasO(i)(g).value()}\t")
 
-      println(summa(g).value() + ">=" + finalQuantity(g))
+      println(s"${summa(g).value()}>=${finalQuantity(g)}")
 
     }
 
