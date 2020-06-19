@@ -1,6 +1,6 @@
 lazy val commonSettings = Seq(
   name         := "Poirot",
-  version      := "0.3.1-SNAPSHOT",
+  version      := "0.3.1",
   organization := "de.sciss",
   scalaVersion := "2.13.2",
   crossScalaVersions := Seq("2.12.11", "2.13.2"),
